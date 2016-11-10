@@ -7,4 +7,5 @@ SUBDIRS += \
 
 SUBDIRS += \
     controls/material/material.pro \
-    controls/universal/universal.pro
+    controls/universal/universal.pro \
+    controls/macOS/macos.pro

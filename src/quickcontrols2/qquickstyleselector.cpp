@@ -67,7 +67,7 @@ static QString ensureSlash(const QString &path)
 
 static QStringList allSelectors(const QString &style = QString())
 {
-    static const QStringList platformSelectors = QFileSelectorPrivate::platformSelectors();
+    static const QStringList platformSelectors;// = QFileSelectorPrivate::platformSelectors();
     QStringList selectors = platformSelectors;
     selectors += QLocale().name();
     if (!style.isEmpty())

@@ -1,9 +1,56 @@
 #include "qquickcontrols2nsview.h"
+#include <QtGui/qopenglframebufferobject.h>
+#include <AppKit/AppKit.h>
 
 QT_BEGIN_NAMESPACE
 
+class NSViewToFboRenderer : public QQuickFramebufferObject::Renderer
+{
+public:
+    NSViewToFboRenderer()
+    {
+        // create NSView etc already here?
+        m_nsView = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 200, 100)];
+        m_nsView.wantsLayer = YES;
+    }
+
+    ~NSViewToFboRenderer()
+    {
+        [m_nsView release];
+    }
+
+    void updateSnapshot()
+    {
+        QQuickFramebufferObject::Renderer::update();
+    }
+
+    void render() override
+    {
+        // my NSView code goes here!
+        glClearColor(0.9f, 0.5f, 0.7f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        NSOpenGLContext *context = [NSOpenGLContext currentContext];
+        //CGLContextObj cgContextObj = context.CGLContextObj;
+        [m_nsView.layer drawInContext:context];
+    }
+
+    QOpenGLFramebufferObject *createFramebufferObject(const QSize &size) override
+    {
+        QOpenGLFramebufferObjectFormat format;
+        format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+        format.setSamples(4);
+        return new QOpenGLFramebufferObject(size, format);
+    }
+
+    NSButton *m_nsView;
+};
+
+// -----------------------------------------------------------
+
 QQuickControls2NSView::QQuickControls2NSView(QQuickItem *parent)
-    : QQuickItem(parent)
+    : QQuickFramebufferObject(parent)
+    , m_renderer(new NSViewToFboRenderer())
     , m_className(QStringLiteral("NSButton"))
     , m_pressed(false)
 {
@@ -34,17 +81,12 @@ void QQuickControls2NSView::updateSnapshot()
 {
     // To avoid updating the snapshot several times if the user changes
     // several properties, he will need to call this function explicit.
+    m_renderer->updateSnapshot();
 }
 
-void QQuickControls2NSView::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &data)
+QQuickFramebufferObject::Renderer *QQuickControls2NSView::createRenderer() const
 {
-    Q_UNUSED(change)
-    Q_UNUSED(data)
-}
-
-QSGNode *QQuickControls2NSView::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaintNodeData *)
-{
-
+    return m_renderer;
 }
 
 #include "moc_qquickcontrols2nsview.cpp"

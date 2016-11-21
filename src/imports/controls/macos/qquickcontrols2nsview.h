@@ -13,10 +13,13 @@
 //
 
 #include <QtQuick/qquickitem.h>
+#include <QtQuick/qquickframebufferobject.h>
 
 QT_BEGIN_NAMESPACE
 
-class QQuickControls2NSView : public QQuickItem
+class NSViewToFboRenderer;
+
+class QQuickControls2NSView : public QQuickFramebufferObject
 {
     Q_OBJECT
     Q_PROPERTY(QString className READ className WRITE setClassName FINAL)
@@ -33,11 +36,10 @@ public:
 
     Q_INVOKABLE void updateSnapshot();
 
-protected:
-    void itemChange(ItemChange change, const ItemChangeData &data) override;
-    QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) override;
+    Renderer *createRenderer() const;
 
 private:
+    NSViewToFboRenderer *m_renderer;
     QString m_className;
     bool m_pressed;
 };

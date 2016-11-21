@@ -13,13 +13,11 @@
 //
 
 #include <QtQuick/qquickitem.h>
-#include <QtQuick/qquickframebufferobject.h>
+#include <QtQuick/qquickpainteditem.h>
 
 QT_BEGIN_NAMESPACE
 
-class NSViewToFboRenderer;
-
-class QQuickControls2NSView : public QQuickFramebufferObject
+class QQuickControls2NSView : public QQuickPaintedItem
 {
     Q_OBJECT
     Q_PROPERTY(QString className READ className WRITE setClassName FINAL)
@@ -34,12 +32,11 @@ public:
     bool pressed() const;
     void setPressed(bool pressed);
 
+    void paint(QPainter *painter);
+
     Q_INVOKABLE void updateSnapshot();
 
-    Renderer *createRenderer() const;
-
 private:
-    NSViewToFboRenderer *m_renderer;
     QString m_className;
     bool m_pressed;
 };

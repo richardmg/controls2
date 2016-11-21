@@ -64,31 +64,42 @@ T.Button {
         color: "black"
     }
 
-
-    background: Rectangle {
-        implicitWidth: 32
-        implicitHeight: 32
-
+    background: NSView {
+        //anchors.fill: parent
+        anchors.centerIn: parent
         visible: !control.flat || control.down || control.checked || control.highlighted
-        color: "red"
-//        color: control.down ? control.Universal.baseMediumLowColor :
-//               control.enabled && (control.highlighted || control.checked) ? control.Universal.accent :
-//                                                                             control.Universal.baseLowColor
-
-        NSView {
-            anchors.fill: parent
-            anchors.margins: 2
-            className: "NSButton"
-            pressed: false
-        }
-
-//        Rectangle {
-//            width: parent.width
-//            height: parent.height
-//            color: "transparent"
-//            visible: control.hovered
-//            border.width: 2 // ButtonBorderThemeThickness
-//            border.color: "blue"
-//        }
+        //anchors.margins: 10
+        className: "NSButton"
+        pressed: false
+        //NSInvocation { name: "setButtonType"; value: 3 }
     }
+
+//    background: Rectangle {
+//        implicitWidth: 32
+//        implicitHeight: 32
+
+//        visible: !control.flat || control.down || control.checked || control.highlighted
+//        color: "red"
+////        color: control.down ? control.Universal.baseMediumLowColor :
+////               control.enabled && (control.highlighted || control.checked) ? control.Universal.accent :
+////                                                                             control.Universal.baseLowColor
+
+//        NSView {
+//            anchors.fill: parent
+//        	visible: !control.flat || control.down || control.checked || control.highlighted
+//            anchors.margins: 10
+//            className: "NSButton"
+//            pressed: false
+//            //NSInvocation { name: "setButtonType"; value: 3 }
+//        }
+
+////        Rectangle {
+////            width: parent.width
+////            height: parent.height
+////            color: "transparent"
+////            visible: control.hovered
+////            border.width: 2 // ButtonBorderThemeThickness
+////            border.color: "blue"
+////        }
+//    }
 }

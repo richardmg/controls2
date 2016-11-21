@@ -1,9 +1,40 @@
 #include "qquickcontrols2nsview.h"
+#include <QtGui/qopenglframebufferobject.h>
 
 QT_BEGIN_NAMESPACE
 
+class NSViewToFboRenderer : public QQuickFramebufferObject::Renderer
+{
+public:
+    NSViewToFboRenderer()
+    {
+        // create NSView etc already here?
+    }
+
+    void updateSnapshot()
+    {
+        QQuickFramebufferObject::Renderer::update();
+    }
+
+    void render() override
+    {
+        // my NSView code goes here!
+    }
+
+    QOpenGLFramebufferObject *createFramebufferObject(const QSize &size) override
+    {
+        QOpenGLFramebufferObjectFormat format;
+        format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+        format.setSamples(4);
+        return new QOpenGLFramebufferObject(size, format);
+    }
+};
+
+// -----------------------------------------------------------
+
 QQuickControls2NSView::QQuickControls2NSView(QQuickItem *parent)
-    : QQuickItem(parent)
+    : QQuickFramebufferObject(parent)
+    , m_renderer(new NSViewToFboRenderer())
     , m_className(QStringLiteral("NSButton"))
     , m_pressed(false)
 {
@@ -34,17 +65,12 @@ void QQuickControls2NSView::updateSnapshot()
 {
     // To avoid updating the snapshot several times if the user changes
     // several properties, he will need to call this function explicit.
+    m_renderer->updateSnapshot();
 }
 
-void QQuickControls2NSView::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &data)
+QQuickFramebufferObject::Renderer *QQuickControls2NSView::createRenderer() const
 {
-    Q_UNUSED(change)
-    Q_UNUSED(data)
-}
-
-QSGNode *QQuickControls2NSView::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaintNodeData *)
-{
-
+    return m_renderer;
 }
 
 #include "moc_qquickcontrols2nsview.cpp"

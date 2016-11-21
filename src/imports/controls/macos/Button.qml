@@ -61,7 +61,7 @@ T.Button {
         verticalAlignment: Text.AlignVCenter
 
         opacity: enabled ? 1.0 : 0.2
-        color: control.Universal.foreground
+        color: "black"
     }
 
 
@@ -77,6 +77,7 @@ T.Button {
 
         NSView {
             anchors.fill: parent
+            anchors.margins: 2
             className: "NSButton"
             pressed: false
         }

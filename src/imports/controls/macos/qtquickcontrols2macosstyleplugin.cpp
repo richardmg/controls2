@@ -35,7 +35,7 @@
 ****************************************************************************/
 
 #include <QtQuickControls2/private/qquickstyleplugin_p.h>
-//#include <QtQuick>
+#include "qquickcontrols2nsview.h"
 
 static inline void initResources()
 {
@@ -85,6 +85,7 @@ void QtQuickControls2macOSStylePlugin::registerTypes(const char *uri)
     qDebug() << Q_FUNC_INFO << uri;
     qmlRegisterUncreatableType<QQuickMacOSStyle>(uri, 2, 0, "MacOS", tr("MacOS is an attached property"));
     qmlRegisterRevision<QQuickMacOSStyle, 1>(uri, 2, 1);
+    qmlRegisterType<QQuickControls2NSView>(uri, 2, 0, "NSView");
 //    QByteArray import = QByteArray(uri);
 //    qmlRegisterType(typeUrl(QStringLiteral("Button.qml")), import, 2, 0, "Button");
 }

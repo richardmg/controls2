@@ -17,32 +17,39 @@
 
 QT_BEGIN_NAMESPACE
 
-class QQuickControls2NSView : public QQuickPaintedItem
+Q_FORWARD_DECLARE_OBJC_CLASS(NSControl);
+
+class QQuickControls2NSControl : public QQuickPaintedItem
 {
     Q_OBJECT
-    Q_PROPERTY(QString className READ className WRITE setClassName FINAL)
     Q_PROPERTY(bool pressed READ pressed WRITE setPressed FINAL)
 
 public:
-    explicit QQuickControls2NSView(QQuickItem *parent = nullptr);
-
-    QString className() const;
-    void setClassName(const QString &className);
+    explicit QQuickControls2NSControl(QQuickItem *parent = nullptr);
 
     bool pressed() const;
     void setPressed(bool pressed);
 
     void paint(QPainter *painter);
 
-    Q_INVOKABLE void updateSnapshot();
+    virtual NSControl* createControl() = 0;
 
 private:
-    QString m_className;
     bool m_pressed;
+};
+
+// ---------------------------------------------------
+
+class QQuickControls2NSButton : public QQuickControls2NSControl
+{
+    Q_OBJECT
+
+public:
+    NSControl* createControl();
 };
 
 QT_END_NAMESPACE
 
-QML_DECLARE_TYPE(QQuickControls2NSView)
+QML_DECLARE_TYPE(QQuickControls2NSButton)
 
 #endif // QQUICKCONTROLS2NSVIEW_H

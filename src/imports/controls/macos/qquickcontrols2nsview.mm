@@ -9,37 +9,26 @@
 
 QT_BEGIN_NAMESPACE
 
-QQuickControls2NSView::QQuickControls2NSView(QQuickItem *parent)
+QQuickControls2NSControl::QQuickControls2NSControl(QQuickItem *parent)
     : QQuickPaintedItem(parent)
-    , m_className(QStringLiteral("NSButton"))
     , m_pressed(false)
 {
     setFlag(ItemHasContents);
 }
 
-QString QQuickControls2NSView::className() const
-{
-    return m_className;
-}
-
-void QQuickControls2NSView::setClassName(const QString &className)
-{
-    m_className = className;
-}
-
-bool QQuickControls2NSView::pressed() const
+bool QQuickControls2NSControl::pressed() const
 {
     return m_pressed;
 }
 
-void QQuickControls2NSView::setPressed(bool pressed)
+void QQuickControls2NSControl::setPressed(bool pressed)
 {
     m_pressed = pressed;
 }
 
-void QQuickControls2NSView::paint(QPainter *painter)
+void QQuickControls2NSControl::paint(QPainter *painter)
 {
-    NSControl *m_nsControl = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, width(), height())];
+    NSControl *m_nsControl = createControl();
     m_nsControl.wantsLayer = YES;
 
     bool supportCustomWidth = true;
@@ -55,10 +44,6 @@ void QQuickControls2NSView::paint(QPainter *painter)
         m_nsControl.bounds = bounds;
     }
 
-    //[m_nsView performSelector:@selector(setButtonType:) withObject:[NSNumber numberWithInt:NSSwitchButton]];
-    //[m_nsView performSelectorOnMainThread:@selector(setButtonType:) withObject:[NSNumber numberWithInt:NSSwitchButton] waitUntilDone:YES];
-    //[m_nsView setButtonType:NSSwitchButton];
-
     int w = int(m_nsControl.bounds.size.width);
     int h = int(m_nsControl.bounds.size.height);
     QPixmap pix(w, h);
@@ -71,11 +56,14 @@ void QQuickControls2NSView::paint(QPainter *painter)
     // todo: copy all pixmaps into atlas FBO
 }
 
-void QQuickControls2NSView::updateSnapshot()
+// ---------------------------------------------------
+
+NSControl* QQuickControls2NSButton::createControl()
 {
-    // To avoid updating the snapshot several times if the user changes
-    // several properties, he will need to call this function explicit.
+    NSButton *nsButton = [[[NSButton alloc] initWithFrame:NSMakeRect(0, 0, width(), height())] autorelease];
+    return nsButton;
 }
+
 
 #include "moc_qquickcontrols2nsview.cpp"
 

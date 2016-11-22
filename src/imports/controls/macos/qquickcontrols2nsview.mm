@@ -11,9 +11,23 @@ QT_BEGIN_NAMESPACE
 
 QQuickControls2NSControl::QQuickControls2NSControl(QQuickItem *parent)
     : QQuickPaintedItem(parent)
+    , m_type(Button)
     , m_pressed(false)
+    , m_useDefaultWidth(true)
+    , m_useDefaultHeight(true)
+    , m_control(Q_NULLPTR)
 {
     setFlag(ItemHasContents);
+}
+
+QQuickControls2NSControl::Type QQuickControls2NSControl::type() const
+{
+   return m_type;
+}
+
+void QQuickControls2NSControl::setType(QQuickControls2NSControl::Type type)
+{
+   m_type = type;
 }
 
 bool QQuickControls2NSControl::pressed() const
@@ -28,42 +42,59 @@ void QQuickControls2NSControl::setPressed(bool pressed)
 
 void QQuickControls2NSControl::paint(QPainter *painter)
 {
-    NSControl *m_nsControl = createControl();
-    m_nsControl.wantsLayer = YES;
+    configureControl();
+    m_control.wantsLayer = YES;
 
-    bool supportCustomWidth = true;
-    bool supportCustomHeight = false;
-
-    if (!supportCustomWidth || !supportCustomHeight) {
-        [m_nsControl sizeToFit];
-        NSRect bounds = m_nsControl.bounds;
-        if (supportCustomWidth)
+    if (!m_useDefaultWidth || !m_useDefaultHeight) {
+        [m_control sizeToFit];
+        NSRect bounds = m_control.bounds;
+        if (m_useDefaultWidth)
             bounds.size.width = width();
-        if (supportCustomHeight)
+        if (m_useDefaultHeight)
             bounds.size.height = height();
-        m_nsControl.bounds = bounds;
+        m_control.bounds = bounds;
     }
 
-    int w = int(m_nsControl.bounds.size.width);
-    int h = int(m_nsControl.bounds.size.height);
+    int w = int(m_control.bounds.size.width);
+    int h = int(m_control.bounds.size.height);
     QPixmap pix(w, h);
     pix.fill(Qt::transparent);
     QMacCGContext ctx(&pix);
 
-    [m_nsControl.layer drawInContext:ctx];
+    [m_control.layer drawInContext:ctx];
     painter->drawPixmap(0, 0, pix);
 
     // todo: copy all pixmaps into atlas FBO
 }
 
-// ---------------------------------------------------
-
-NSControl* QQuickControls2NSButton::createControl()
+void QQuickControls2NSControl::configureControl()
 {
-    NSButton *nsButton = [[[NSButton alloc] initWithFrame:NSMakeRect(0, 0, width(), height())] autorelease];
-    return nsButton;
+    switch(m_type) {
+    case Button:
+        configureButton();
+        break;
+    case ComboBox:
+        configureComboBox();
+        break;
+    default: {
+        Q_UNREACHABLE(); }
+    }
+
+    Q_ASSERT(m_control);
 }
 
+void QQuickControls2NSControl::configureButton()
+{
+    NSButton *button = [[[NSButton alloc] initWithFrame:NSMakeRect(0, 0, width(), height())] autorelease];
+    m_control = button;
+}
+
+void QQuickControls2NSControl::configureComboBox()
+{
+    m_useDefaultHeight = false;
+    NSComboBox *combobox = [[[NSComboBox alloc] initWithFrame:NSMakeRect(0, 0, width(), height())] autorelease];
+    m_control = combobox;
+}
 
 #include "moc_qquickcontrols2nsview.cpp"
 

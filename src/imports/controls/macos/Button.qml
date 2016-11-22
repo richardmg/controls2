@@ -64,9 +64,11 @@ T.Button {
         color: "black"
     }
 
-    background: NSButton {
+    background: NSControl {
         anchors.centerIn: parent
         visible: !control.flat || control.down || control.checked || control.highlighted
+
+        type: NSControl.ComboBox
         pressed: false
     }
 }

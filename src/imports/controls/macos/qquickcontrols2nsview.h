@@ -23,33 +23,40 @@ class QQuickControls2NSControl : public QQuickPaintedItem
 {
     Q_OBJECT
     Q_PROPERTY(bool pressed READ pressed WRITE setPressed FINAL)
+    Q_PROPERTY(Type type READ type WRITE setType FINAL)
 
 public:
+    enum Type {
+        Button,
+        ComboBox,
+    };
+
+    Q_ENUM(Type)
+
     explicit QQuickControls2NSControl(QQuickItem *parent = nullptr);
+
+    Type type() const;
+    void setType(Type type);
 
     bool pressed() const;
     void setPressed(bool pressed);
 
     void paint(QPainter *painter);
 
-    virtual NSControl* createControl() = 0;
-
 private:
+    Type m_type;
     bool m_pressed;
-};
+    bool m_useDefaultWidth;
+    bool m_useDefaultHeight;
+    NSControl *m_control;
 
-// ---------------------------------------------------
-
-class QQuickControls2NSButton : public QQuickControls2NSControl
-{
-    Q_OBJECT
-
-public:
-    NSControl* createControl();
+    void configureControl();
+    void configureButton();
+    void configureComboBox();
 };
 
 QT_END_NAMESPACE
 
-QML_DECLARE_TYPE(QQuickControls2NSButton)
+QML_DECLARE_TYPE(QQuickControls2NSControl)
 
 #endif // QQUICKCONTROLS2NSVIEW_H

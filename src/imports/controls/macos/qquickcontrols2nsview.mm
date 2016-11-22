@@ -71,6 +71,7 @@ void QQuickControls2NSControl::configureControl()
 {
     switch(m_type) {
     case Button:
+    case CheckBox:
         configureButton();
         break;
     case ComboBox:
@@ -86,6 +87,16 @@ void QQuickControls2NSControl::configureControl()
 void QQuickControls2NSControl::configureButton()
 {
     NSButton *button = [[[NSButton alloc] initWithFrame:NSMakeRect(0, 0, width(), height())] autorelease];
+    button.title = @"";
+
+    switch(m_type) {
+    case CheckBox:
+        button.buttonType = NSSwitchButton;
+        break;
+    default:
+        break;
+    }
+
     m_control = button;
 }
 

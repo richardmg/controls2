@@ -28,6 +28,7 @@ class QQuickControls2NSControl : public QQuickPaintedItem
 public:
     enum Type {
         Button,
+        CheckBox,
         ComboBox,
     };
 

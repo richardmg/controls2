@@ -68,7 +68,7 @@ T.Button {
         anchors.centerIn: parent
         visible: !control.flat || control.down || control.checked || control.highlighted
 
-        type: NSControl.ComboBox
+        type: NSControl.CheckBox
         pressed: false
     }
 }

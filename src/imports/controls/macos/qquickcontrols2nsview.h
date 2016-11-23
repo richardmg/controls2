@@ -12,6 +12,7 @@
 // We mean it.
 //
 
+#include <QtGui/qpixmap.h>
 #include <QtQuick/qquickitem.h>
 #include <QtQuick/qquickpainteditem.h>
 
@@ -24,6 +25,7 @@ class QQuickControls2NSControl : public QQuickPaintedItem
     Q_OBJECT
     Q_PROPERTY(bool pressed READ pressed WRITE setPressed FINAL)
     Q_PROPERTY(Type type READ type WRITE setType FINAL)
+    Q_PROPERTY(QRectF contentRect READ contentRect NOTIFY contentRectChanged FINAL)
 
 public:
     enum Type {
@@ -42,18 +44,26 @@ public:
     bool pressed() const;
     void setPressed(bool pressed);
 
+    QRectF contentRect() const;
+
     void paint(QPainter *painter);
+
+Q_SIGNALS:
+    void contentRectChanged();
 
 private:
     Type m_type;
     bool m_pressed;
-    bool m_useDefaultWidth;
-    bool m_useDefaultHeight;
-    NSControl *m_control;
+    QRectF m_contentRect;
+    QPixmap m_pixmap;
 
-    void configureControl();
-    void configureButton();
-    void configureComboBox();
+    void createPixmap();
+    void setControlSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight);
+    void setContentRect(const QRectF &rect);
+
+    NSControl *createControl();
+    NSControl *createButton();
+    NSControl *createComboBox();
 };
 
 QT_END_NAMESPACE

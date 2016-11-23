@@ -13,11 +13,11 @@ QQuickControls2NSControl::QQuickControls2NSControl(QQuickItem *parent)
     : QQuickPaintedItem(parent)
     , m_type(Button)
     , m_pressed(false)
-    , m_useDefaultWidth(true)
-    , m_useDefaultHeight(true)
-    , m_control(Q_NULLPTR)
+    , m_contentRect(QRectF())
+    , m_pixmap(QPixmap())
 {
     setFlag(ItemHasContents);
+    createPixmap();
 }
 
 QQuickControls2NSControl::Type QQuickControls2NSControl::type() const
@@ -40,53 +40,76 @@ void QQuickControls2NSControl::setPressed(bool pressed)
     m_pressed = pressed;
 }
 
-void QQuickControls2NSControl::paint(QPainter *painter)
+QRectF QQuickControls2NSControl::contentRect() const
 {
-    configureControl();
-    m_control.wantsLayer = YES;
-
-    if (!m_useDefaultWidth || !m_useDefaultHeight) {
-        [m_control sizeToFit];
-        NSRect bounds = m_control.bounds;
-        if (m_useDefaultWidth)
-            bounds.size.width = width();
-        if (m_useDefaultHeight)
-            bounds.size.height = height();
-        m_control.bounds = bounds;
-    }
-
-    int w = int(m_control.bounds.size.width);
-    int h = int(m_control.bounds.size.height);
-    QPixmap pix(w, h);
-    pix.fill(Qt::transparent);
-    QMacCGContext ctx(&pix);
-
-    [m_control.layer drawInContext:ctx];
-    painter->drawPixmap(0, 0, pix);
-
-    // todo: copy all pixmaps into atlas FBO
+    return m_contentRect;
 }
 
-void QQuickControls2NSControl::configureControl()
+void QQuickControls2NSControl::paint(QPainter *painter)
 {
+    painter->drawPixmap(0, 0, m_pixmap);
+}
+
+void QQuickControls2NSControl::createPixmap()
+{
+    NSControl *control = createControl();
+
+    // todo: copy all pixmaps into atlas FBO?
+    m_pixmap = QPixmap(QSizeF::fromCGSize(control.bounds.size).toSize());
+    m_pixmap.fill(Qt::transparent);
+    QMacCGContext ctx(&m_pixmap);
+
+    control.wantsLayer = YES;
+    [control.layer drawInContext:ctx];
+}
+
+void QQuickControls2NSControl::setContentRect(const QRectF &rect)
+{
+    if (rect == m_contentRect)
+        return;
+
+    m_contentRect = rect;
+    emit contentRectChanged();
+}
+
+void QQuickControls2NSControl::setControlSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight)
+{
+    [control sizeToFit];
+    NSRect bounds = control.bounds;
+    setImplicitSize(bounds.size.width, bounds.size.height);
+
+    if (!hasFixedWidth)
+        bounds.size.width = width();
+    if (!hasFixedHeight)
+        bounds.size.height = height();
+
+    control.bounds = bounds;
+}
+
+NSControl *QQuickControls2NSControl::createControl()
+{
+    NSControl *control = Q_NULLPTR;
+
     switch(m_type) {
     case Button:
     case CheckBox:
-        configureButton();
+        control = createButton();
         break;
     case ComboBox:
-        configureComboBox();
+        control = createComboBox();
         break;
     default: {
         Q_UNREACHABLE(); }
     }
 
-    Q_ASSERT(m_control);
+    Q_ASSERT(control);
+    return control;
 }
 
-void QQuickControls2NSControl::configureButton()
+NSControl *QQuickControls2NSControl::createButton()
 {
-    NSButton *button = [[[NSButton alloc] initWithFrame:NSMakeRect(0, 0, width(), height())] autorelease];
+    NSButton *button = [[[NSButton alloc] initWithFrame:NSZeroRect] autorelease];
+    setControlSize(button, false, false);
     button.title = @"";
 
     switch(m_type) {
@@ -97,14 +120,17 @@ void QQuickControls2NSControl::configureButton()
         break;
     }
 
-    m_control = button;
+    setContentRect(QRectF::fromCGRect(button.bounds));
+    return button;
 }
 
-void QQuickControls2NSControl::configureComboBox()
+NSControl *QQuickControls2NSControl::createComboBox()
 {
-    m_useDefaultHeight = false;
-    NSComboBox *combobox = [[[NSComboBox alloc] initWithFrame:NSMakeRect(0, 0, width(), height())] autorelease];
-    m_control = combobox;
+    NSComboBox *combobox = [[[NSComboBox alloc] initWithFrame:NSZeroRect] autorelease];
+    setControlSize(combobox, false, true);
+
+    setContentRect(QRectF::fromCGRect(combobox.bounds));
+    return combobox;
 }
 
 #include "moc_qquickcontrols2nsview.cpp"

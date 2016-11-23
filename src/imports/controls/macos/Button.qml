@@ -47,28 +47,30 @@ T.Button {
                              contentItem.implicitHeight + topPadding + bottomPadding)
     baselineOffset: contentItem.y + contentItem.baselineOffset
 
-    padding: 8
-    topPadding: padding - 4
-    bottomPadding: padding - 4
+//    padding: 8
+//    topPadding: padding - 4
+//    bottomPadding: padding - 4
 
-    property bool useSystemFocusVisuals: true
+    contentItem: Item {
+        Text {
+            x: background.contentRect.x
+            y: background.contentRect.y
+            width: background.contentRect.width
+            height: background.contentRect.height
+            text: control.text
+            font: control.font
+            elide: Text.ElideRight
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
 
-    contentItem: Text {
-        text: control.text
-        font: control.font
-        elide: Text.ElideRight
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-
-        opacity: enabled ? 1.0 : 0.2
-        color: "black"
+            opacity: enabled ? 1.0 : 0.2
+            color: "black"
+        }
     }
 
     background: NSControl {
-        anchors.centerIn: parent
-        visible: !control.flat || control.down || control.checked || control.highlighted
-
-        type: NSControl.CheckBox
+        anchors.fill: parent
+        type: NSControl.Button
         pressed: false
     }
 }

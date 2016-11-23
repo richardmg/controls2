@@ -15,6 +15,7 @@ QQuickControls2NSControl::QQuickControls2NSControl(QQuickItem *parent)
     , m_pressed(false)
     , m_contentRect(QRectF())
     , m_pixmap(QPixmap())
+    , m_snapshotFailed(false)
 {
     setFlag(ItemHasContents);
     createPixmap();
@@ -43,6 +44,11 @@ void QQuickControls2NSControl::setPressed(bool pressed)
 QRectF QQuickControls2NSControl::contentRect() const
 {
     return m_contentRect;
+}
+
+bool QQuickControls2NSControl::snapshotFailed() const
+{
+    return m_snapshotFailed;
 }
 
 void QQuickControls2NSControl::paint(QPainter *painter)

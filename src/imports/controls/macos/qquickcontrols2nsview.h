@@ -26,6 +26,7 @@ class QQuickControls2NSControl : public QQuickPaintedItem
     Q_PROPERTY(bool pressed READ pressed WRITE setPressed FINAL)
     Q_PROPERTY(Type type READ type WRITE setType FINAL)
     Q_PROPERTY(QRectF contentRect READ contentRect NOTIFY contentRectChanged FINAL)
+    Q_PROPERTY(bool snapshotFailed READ snapshotFailed NOTIFY snapshotFailedChanged FINAL)
 
 public:
     enum Type {
@@ -43,19 +44,22 @@ public:
 
     bool pressed() const;
     void setPressed(bool pressed);
-
     QRectF contentRect() const;
+    bool snapshotFailed() const;
 
     void paint(QPainter *painter);
 
+
 Q_SIGNALS:
     void contentRectChanged();
+    void snapshotFailedChanged(bool snapshotFailed);
 
 private:
     Type m_type;
     bool m_pressed;
     QRectF m_contentRect;
     QPixmap m_pixmap;
+    bool m_snapshotFailed;
 
     void createPixmap();
     void setControlSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight);

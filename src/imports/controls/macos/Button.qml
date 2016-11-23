@@ -72,5 +72,10 @@ T.Button {
         anchors.fill: parent
         type: NSControl.Button
         pressed: false
+
+        onSnapshotFailedChanged: {
+            print("Snapshot failed, fall back to draw the control, or use default style")
+            // or add 'fallback:' prop that points to a component that gets instanciated automatically
+        }
     }
 }

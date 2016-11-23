@@ -45,18 +45,21 @@ T.Button {
                             contentItem.implicitWidth + leftPadding + rightPadding)
     implicitHeight: Math.max(background ? background.implicitHeight : 0,
                              contentItem.implicitHeight + topPadding + bottomPadding)
-    baselineOffset: contentItem.y + contentItem.baselineOffset
+//    baselineOffset: contentItem.y + contentItem.baselineOffset
 
 //    padding: 8
 //    topPadding: padding - 4
 //    bottomPadding: padding - 4
 
     contentItem: Item {
+        implicitWidth: text.implicitWidth
+        implicitHeight: text.implicitHeight
         Text {
-            x: background.contentRect.x
-            y: background.contentRect.y
-            width: background.contentRect.width
-            height: background.contentRect.height
+            id: text
+//            x: background.contentRect.x
+//            y: background.contentRect.y
+//            width: background.contentRect.width
+//            height: background.contentRect.height
             text: control.text
             font: control.font
             elide: Text.ElideRight
@@ -65,11 +68,12 @@ T.Button {
 
             opacity: enabled ? 1.0 : 0.2
             color: "black"
+            onImplicitWidthChanged: print("impl width:", implicitWidth)
+            onImplicitHeightChanged: print("impl height:", implicitHeight)
         }
     }
 
     background: NSControl {
-        anchors.fill: parent
         type: NSControl.Button
         pressed: false
 
@@ -77,5 +81,6 @@ T.Button {
             print("Snapshot failed, fall back to draw the control, or use default style")
             // or add 'fallback:' prop that points to a component that gets instanciated automatically
         }
+        onWidthChanged: print("new control width:" + width)
     }
 }

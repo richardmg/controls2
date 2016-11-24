@@ -14,11 +14,13 @@ QQuickControls2NSControl::QQuickControls2NSControl(QQuickItem *parent)
     , m_type(Button)
     , m_pressed(false)
     , m_contentRect(QRectF())
-    , m_pixmap(QPixmap())
     , m_snapshotFailed(false)
+    , m_text(Q_NULLPTR)
 {
     setFlag(ItemHasContents);
-    createPixmap();
+
+    // Dummy, to calculate implicit size
+    createControl();
 }
 
 QQuickControls2NSControl::Type QQuickControls2NSControl::type() const
@@ -51,22 +53,33 @@ bool QQuickControls2NSControl::snapshotFailed() const
     return m_snapshotFailed;
 }
 
-void QQuickControls2NSControl::paint(QPainter *painter)
+QQuickText *QQuickControls2NSControl::text() const
 {
-    painter->drawPixmap(0, 0, m_pixmap);
+   return m_text;
 }
 
-void QQuickControls2NSControl::createPixmap()
+void QQuickControls2NSControl::setText(QQuickText *text)
+{
+   m_text = text;
+}
+
+void QQuickControls2NSControl::paint(QPainter *painter)
+{
+    painter->drawPixmap(0, 0, createPixmap());
+}
+
+QPixmap QQuickControls2NSControl::createPixmap()
 {
     NSControl *control = createControl();
 
     // todo: copy all pixmaps into atlas FBO?
-    m_pixmap = QPixmap(QSizeF::fromCGSize(control.bounds.size).toSize());
-    m_pixmap.fill(Qt::transparent);
-    QMacCGContext ctx(&m_pixmap);
+    QPixmap pixmap(QSizeF::fromCGSize(control.bounds.size).toSize());
+    pixmap.fill(Qt::transparent);
+    QMacCGContext ctx(&pixmap);
 
     control.wantsLayer = YES;
     [control.layer drawInContext:ctx];
+    return pixmap;
 }
 
 void QQuickControls2NSControl::setContentRect(const QRectF &rect)
@@ -82,6 +95,7 @@ void QQuickControls2NSControl::setControlSize(NSControl *control, bool hasFixedW
 {
     [control sizeToFit];
     NSRect bounds = control.bounds;
+
     setImplicitSize(bounds.size.width, bounds.size.height);
 
     if (!hasFixedWidth)
@@ -89,6 +103,7 @@ void QQuickControls2NSControl::setControlSize(NSControl *control, bool hasFixedW
     if (!hasFixedHeight)
         bounds.size.height = height();
 
+    qDebug() << Q_FUNC_INFO << QRectF::fromCGRect(bounds) << width() << height();
     control.bounds = bounds;
 }
 
@@ -115,8 +130,16 @@ NSControl *QQuickControls2NSControl::createControl()
 NSControl *QQuickControls2NSControl::createButton()
 {
     NSButton *button = [[[NSButton alloc] initWithFrame:NSZeroRect] autorelease];
+
+    if (m_text) {
+        button.title = m_text->text().toNSString();
+        qDebug() << "createButton, setting text:" << m_text->text();
+        // set font as well. is this a part of nscontrol, then factor it out.
+    } else {
+        qWarning() << "NSControl: missing text";
+    }
+
     setControlSize(button, false, false);
-    button.title = @"";
 
     switch(m_type) {
     case CheckBox:

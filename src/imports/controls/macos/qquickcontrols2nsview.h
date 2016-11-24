@@ -15,6 +15,7 @@
 #include <QtGui/qpixmap.h>
 #include <QtQuick/qquickitem.h>
 #include <QtQuick/qquickpainteditem.h>
+#include <QtQuick/private/qquicktext_p.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -26,6 +27,7 @@ class QQuickControls2NSControl : public QQuickPaintedItem
     Q_PROPERTY(bool pressed READ pressed WRITE setPressed FINAL)
     Q_PROPERTY(Type type READ type WRITE setType FINAL)
     Q_PROPERTY(QRectF contentRect READ contentRect NOTIFY contentRectChanged FINAL)
+    Q_PROPERTY(QQuickText *text READ text WRITE setText FINAL)
     Q_PROPERTY(bool snapshotFailed READ snapshotFailed NOTIFY snapshotFailedChanged FINAL)
 
 public:
@@ -46,9 +48,10 @@ public:
     void setPressed(bool pressed);
     QRectF contentRect() const;
     bool snapshotFailed() const;
+    QQuickText *text() const;
+    void setText(QQuickText *text);
 
     void paint(QPainter *painter);
-
 
 Q_SIGNALS:
     void contentRectChanged();
@@ -58,10 +61,10 @@ private:
     Type m_type;
     bool m_pressed;
     QRectF m_contentRect;
-    QPixmap m_pixmap;
     bool m_snapshotFailed;
+    QQuickText *m_text;
 
-    void createPixmap();
+    QPixmap createPixmap();
     void setControlSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight);
     void setContentRect(const QRectF &rect);
 

@@ -41,10 +41,15 @@ import QtQuick.Controls.macOS 2.1
 T.Button {
     id: control
 
+    implicitWidth: background.implicitWidth
+    implicitHeight: background.implicitHeight
+
+    /*
     implicitWidth: Math.max(background ? background.implicitWidth : 0,
                             contentItem.implicitWidth + leftPadding + rightPadding)
     implicitHeight: Math.max(background ? background.implicitHeight : 0,
                              contentItem.implicitHeight + topPadding + bottomPadding)
+    */
 //    baselineOffset: contentItem.y + contentItem.baselineOffset
 
 //    padding: 8
@@ -68,19 +73,31 @@ T.Button {
 
             opacity: enabled ? 1.0 : 0.2
             color: "black"
-            onImplicitWidthChanged: print("impl width:", implicitWidth)
-            onImplicitHeightChanged: print("impl height:", implicitHeight)
+            onImplicitWidthChanged: print("impl text width:", implicitWidth)
+            onImplicitHeightChanged: print("impl text height:", implicitHeight)
         }
     }
 
     background: NSControl {
         type: NSControl.Button
         pressed: false
+        text: text
+        
+        //width: 100//text.width
+        //height: 100//text.height
+
+        // Problemet er at nscontrol ikke har noen label, og dermed vil den calculere
+        // en alt for liten knapp i sizeToFit.
+        // 1. enten gi med en text, selv om dette blir unøyaktig
+        // 2. skriv om slik at text blir førende for størrelsen i horisontal retning
+        //  - høres mest fornuftig ut
+        //  - kanskje sende med text.width og text.height som ønsket content size?
 
         onSnapshotFailedChanged: {
             print("Snapshot failed, fall back to draw the control, or use default style")
             // or add 'fallback:' prop that points to a component that gets instanciated automatically
         }
-        onWidthChanged: print("new control width:" + width)
+        onWidthChanged: print("new nscontrol width:" + width)
+        onHeightChanged: print("new nscontrol :" + width)
     }
 }

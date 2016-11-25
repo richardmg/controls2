@@ -44,6 +44,14 @@ T.Button {
     implicitWidth: background.implicitWidth
     implicitHeight: background.implicitHeight
 
+    Text {
+       id: foo
+       font.family: "verdana"
+       font.pointSize: 20
+    }
+
+    font: foo.font
+
     /*
     implicitWidth: Math.max(background ? background.implicitWidth : 0,
                             contentItem.implicitWidth + leftPadding + rightPadding)
@@ -73,8 +81,8 @@ T.Button {
 
             opacity: enabled ? 1.0 : 0.2
             color: "black"
-            onImplicitWidthChanged: print("impl text width:", implicitWidth)
-            onImplicitHeightChanged: print("impl text height:", implicitHeight)
+            //onImplicitWidthChanged: print("impl text width:", implicitWidth)
+            //onImplicitHeightChanged: print("impl text height:", implicitHeight)
         }
     }
 

@@ -96,6 +96,7 @@ void QQuickControls2NSControl::setControlSize(NSControl *control, bool hasFixedW
     [control sizeToFit];
     NSRect bounds = control.bounds;
 
+    qDebug() << Q_FUNC_INFO << "implicit size:" << bounds.size.width << bounds.size.height;
     setImplicitSize(bounds.size.width, bounds.size.height);
 
     if (!hasFixedWidth)
@@ -103,8 +104,18 @@ void QQuickControls2NSControl::setControlSize(NSControl *control, bool hasFixedW
     if (!hasFixedHeight)
         bounds.size.height = height();
 
-    qDebug() << Q_FUNC_INFO << QRectF::fromCGRect(bounds) << width() << height();
     control.bounds = bounds;
+}
+
+void QQuickControls2NSControl::setText(NSControl *control)
+{
+    if (!m_text)
+        return;
+
+    control.stringValue = @"Foobar";//m_text->text().toNSString();
+    NSString *family = m_text->font().family().toNSString();
+    int pointSize = m_text->font().pointSize();
+    control.font = [NSFont fontWithName:family size:pointSize];
 }
 
 NSControl *QQuickControls2NSControl::createControl()
@@ -131,14 +142,9 @@ NSControl *QQuickControls2NSControl::createButton()
 {
     NSButton *button = [[[NSButton alloc] initWithFrame:NSZeroRect] autorelease];
 
-    if (m_text) {
+    if (m_text)
         button.title = m_text->text().toNSString();
-        qDebug() << "createButton, setting text:" << m_text->text();
-        // set font as well. is this a part of nscontrol, then factor it out.
-    } else {
-        qWarning() << "NSControl: missing text";
-    }
-
+    setText(button);
     setControlSize(button, false, false);
 
     switch(m_type) {

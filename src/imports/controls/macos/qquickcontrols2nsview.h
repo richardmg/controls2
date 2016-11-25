@@ -67,6 +67,7 @@ private:
     QPixmap createPixmap();
     void setControlSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight);
     void setContentRect(const QRectF &rect);
+    void setText(NSControl *control);
 
     NSControl *createControl();
     NSControl *createButton();

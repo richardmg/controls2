@@ -47,10 +47,10 @@ T.Button {
     Text {
        id: foo
        font.family: "verdana"
-       font.pointSize: 20
+       font.pointSize: 12
     }
 
-    font: foo.font
+    //font: foo.font
 
     /*
     implicitWidth: Math.max(background ? background.implicitWidth : 0,
@@ -69,10 +69,10 @@ T.Button {
         implicitHeight: text.implicitHeight
         Text {
             id: text
-//            x: background.contentRect.x
-//            y: background.contentRect.y
-//            width: background.contentRect.width
-//            height: background.contentRect.height
+            x: background.contentRect.x
+            y: background.contentRect.y
+            width: background.contentRect.width
+            height: background.contentRect.height
             text: control.text
             font: control.font
             elide: Text.ElideRight
@@ -105,7 +105,5 @@ T.Button {
             print("Snapshot failed, fall back to draw the control, or use default style")
             // or add 'fallback:' prop that points to a component that gets instanciated automatically
         }
-        onWidthChanged: print("new nscontrol width:" + width)
-        onHeightChanged: print("new nscontrol :" + width)
     }
 }

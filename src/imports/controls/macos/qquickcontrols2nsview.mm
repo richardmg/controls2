@@ -90,6 +90,11 @@ QPixmap QQuickControls2NSControl::createPixmap()
     return pixmap;
 }
 
+void QQuickControls2NSControl::setContentRect(const CGRect &cgRect, int x1, int y1, int x2, int y2)
+{
+    setContentRect(QRectF::fromCGRect(cgRect).adjusted(x1, y1, x2, y2));
+}
+
 void QQuickControls2NSControl::setContentRect(const QRectF &rect)
 {
     if (rect == m_contentRect)
@@ -99,13 +104,16 @@ void QQuickControls2NSControl::setContentRect(const QRectF &rect)
     emit contentRectChanged();
 }
 
-void QQuickControls2NSControl::setControlSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight)
+void QQuickControls2NSControl::calculateAndSetImplicitSize(NSControl *control)
 {
     [control sizeToFit];
     NSRect bounds = control.bounds;
-
-    qDebug() << Q_FUNC_INFO << "implicit size:" << bounds.size.width << bounds.size.height;
     setImplicitSize(bounds.size.width, bounds.size.height);
+}
+
+void QQuickControls2NSControl::syncControlSizeWithItemSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight)
+{
+    NSRect bounds = control.bounds;
 
     if (!hasFixedWidth)
         bounds.size.width = width();
@@ -115,12 +123,11 @@ void QQuickControls2NSControl::setControlSize(NSControl *control, bool hasFixedW
     control.bounds = bounds;
 }
 
-void QQuickControls2NSControl::setText(NSControl *control)
+void QQuickControls2NSControl::setFont(NSControl *control)
 {
     if (!m_text)
         return;
 
-    control.stringValue = m_text->text().toNSString();
     NSString *family = m_text->font().family().toNSString();
     int pointSize = m_text->font().pointSize();
     control.font = [NSFont fontWithName:family size:pointSize];
@@ -150,11 +157,6 @@ void QQuickControls2NSControl::createButton()
 {
     NSButton *button = [[NSButton alloc] initWithFrame:NSZeroRect];
 
-    if (m_text)
-        button.title = m_text->text().toNSString();
-    setText(button);
-    setControlSize(button, false, false);
-
     switch(m_type) {
     case CheckBox:
         button.buttonType = NSSwitchButton;
@@ -163,16 +165,27 @@ void QQuickControls2NSControl::createButton()
         break;
     }
 
-    setContentRect(QRectF::fromCGRect(button.bounds));
+    if (m_text) {
+        setFont(button);
+        button.title = m_text->text().toNSString();
+    }
+
+    calculateAndSetImplicitSize(button);
+    syncControlSizeWithItemSize(button, false, false);
+    setContentRect(button.bounds, -1, 1);
+
+    // Remove title before taking snapshot
+    button.title = @"";
+
     m_control = button;
 }
 
 void QQuickControls2NSControl::createComboBox()
 {
     NSComboBox *combobox = [[NSComboBox alloc] initWithFrame:NSZeroRect];
-    setControlSize(combobox, false, true);
+    syncControlSizeWithItemSize(combobox, false, true);
 
-    setContentRect(QRectF::fromCGRect(combobox.bounds));
+    setContentRect(combobox.bounds);
     m_control = combobox;
 }
 

@@ -70,9 +70,11 @@ private:
     NSControl *m_control;
 
     QPixmap createPixmap();
-    void setControlSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight);
+    void syncControlSizeWithItemSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight);
+    void setContentRect(const CGRect &cgRect, int x1 = 0, int y1 = 0, int x2 = 0, int y2 = 0);
     void setContentRect(const QRectF &rect);
-    void setText(NSControl *control);
+    void calculateAndSetImplicitSize(NSControl *control);
+    void setFont(NSControl *control);
 
     void createButton();
     void createComboBox();

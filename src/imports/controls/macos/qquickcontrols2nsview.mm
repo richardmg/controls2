@@ -16,11 +16,14 @@ QQuickControls2NSControl::QQuickControls2NSControl(QQuickItem *parent)
     , m_contentRect(QRectF())
     , m_snapshotFailed(false)
     , m_text(Q_NULLPTR)
+    , m_control(Q_NULLPTR)
 {
     setFlag(ItemHasContents);
+}
 
-    // Dummy, to calculate implicit size
-    createControl();
+QQuickControls2NSControl::~QQuickControls2NSControl()
+{
+    [m_control release];
 }
 
 QQuickControls2NSControl::Type QQuickControls2NSControl::type() const
@@ -60,6 +63,7 @@ QQuickText *QQuickControls2NSControl::text() const
 
 void QQuickControls2NSControl::setText(QQuickText *text)
 {
+    qDebug() << Q_FUNC_INFO << "setting text:" << text->text();
    m_text = text;
 }
 
@@ -68,17 +72,21 @@ void QQuickControls2NSControl::paint(QPainter *painter)
     painter->drawPixmap(0, 0, createPixmap());
 }
 
+void QQuickControls2NSControl::componentComplete()
+{
+    updateControl();
+    QQuickPaintedItem::componentComplete();
+}
+
 QPixmap QQuickControls2NSControl::createPixmap()
 {
-    NSControl *control = createControl();
-
     // todo: copy all pixmaps into atlas FBO?
-    QPixmap pixmap(QSizeF::fromCGSize(control.bounds.size).toSize());
+    QPixmap pixmap(QSizeF::fromCGSize(m_control.bounds.size).toSize());
     pixmap.fill(Qt::transparent);
     QMacCGContext ctx(&pixmap);
 
-    control.wantsLayer = YES;
-    [control.layer drawInContext:ctx];
+    m_control.wantsLayer = YES;
+    [m_control.layer drawInContext:ctx];
     return pixmap;
 }
 
@@ -112,35 +120,35 @@ void QQuickControls2NSControl::setText(NSControl *control)
     if (!m_text)
         return;
 
-    control.stringValue = @"Foobar";//m_text->text().toNSString();
+    control.stringValue = m_text->text().toNSString();
     NSString *family = m_text->font().family().toNSString();
     int pointSize = m_text->font().pointSize();
     control.font = [NSFont fontWithName:family size:pointSize];
 }
 
-NSControl *QQuickControls2NSControl::createControl()
+void QQuickControls2NSControl::updateControl()
 {
-    NSControl *control = Q_NULLPTR;
+    [m_control release];
+    m_control = Q_NULLPTR;
 
     switch(m_type) {
     case Button:
     case CheckBox:
-        control = createButton();
+        createButton();
         break;
     case ComboBox:
-        control = createComboBox();
+        createComboBox();
         break;
     default: {
         Q_UNREACHABLE(); }
     }
 
-    Q_ASSERT(control);
-    return control;
+    Q_ASSERT(m_control);
 }
 
-NSControl *QQuickControls2NSControl::createButton()
+void QQuickControls2NSControl::createButton()
 {
-    NSButton *button = [[[NSButton alloc] initWithFrame:NSZeroRect] autorelease];
+    NSButton *button = [[NSButton alloc] initWithFrame:NSZeroRect];
 
     if (m_text)
         button.title = m_text->text().toNSString();
@@ -156,16 +164,16 @@ NSControl *QQuickControls2NSControl::createButton()
     }
 
     setContentRect(QRectF::fromCGRect(button.bounds));
-    return button;
+    m_control = button;
 }
 
-NSControl *QQuickControls2NSControl::createComboBox()
+void QQuickControls2NSControl::createComboBox()
 {
-    NSComboBox *combobox = [[[NSComboBox alloc] initWithFrame:NSZeroRect] autorelease];
+    NSComboBox *combobox = [[NSComboBox alloc] initWithFrame:NSZeroRect];
     setControlSize(combobox, false, true);
 
     setContentRect(QRectF::fromCGRect(combobox.bounds));
-    return combobox;
+    m_control = combobox;
 }
 
 #include "moc_qquickcontrols2nsview.cpp"

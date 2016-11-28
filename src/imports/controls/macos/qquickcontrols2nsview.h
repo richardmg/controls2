@@ -40,6 +40,7 @@ public:
     Q_ENUM(Type)
 
     explicit QQuickControls2NSControl(QQuickItem *parent = nullptr);
+    ~QQuickControls2NSControl();
 
     Type type() const;
     void setType(Type type);
@@ -51,7 +52,10 @@ public:
     QQuickText *text() const;
     void setText(QQuickText *text);
 
-    void paint(QPainter *painter);
+    virtual void paint(QPainter *painter) override;
+    virtual void componentComplete() override;
+
+    Q_INVOKABLE void updateControl();
 
 Q_SIGNALS:
     void contentRectChanged();
@@ -63,15 +67,15 @@ private:
     QRectF m_contentRect;
     bool m_snapshotFailed;
     QQuickText *m_text;
+    NSControl *m_control;
 
     QPixmap createPixmap();
     void setControlSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight);
     void setContentRect(const QRectF &rect);
     void setText(NSControl *control);
 
-    NSControl *createControl();
-    NSControl *createButton();
-    NSControl *createComboBox();
+    void createButton();
+    void createComboBox();
 };
 
 QT_END_NAMESPACE

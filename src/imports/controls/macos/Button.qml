@@ -88,7 +88,7 @@ T.Button {
 
     background: NSControl {
         type: NSControl.Button
-        pressed: false
+        pressed: false//control.pressed
         text: text
         
         //width: 100//text.width

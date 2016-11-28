@@ -82,7 +82,6 @@ QtQuickControls2macOSStylePlugin::QtQuickControls2macOSStylePlugin(QObject *pare
 
 void QtQuickControls2macOSStylePlugin::registerTypes(const char *uri)
 {
-    qDebug() << Q_FUNC_INFO << uri;
     qmlRegisterUncreatableType<QQuickMacOSStyle>(uri, 2, 0, "MacOS", tr("MacOS is an attached property"));
     qmlRegisterRevision<QQuickMacOSStyle, 1>(uri, 2, 1);
     qmlRegisterType<QQuickControls2NSControl>(uri, 2, 0, "NSControl");

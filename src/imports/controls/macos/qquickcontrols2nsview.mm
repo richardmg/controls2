@@ -33,7 +33,11 @@ QQuickControls2NSControl::Type QQuickControls2NSControl::type() const
 
 void QQuickControls2NSControl::setType(QQuickControls2NSControl::Type type)
 {
+    if (m_type == type)
+        return;
+
    m_type = type;
+   updateControl();
 }
 
 bool QQuickControls2NSControl::pressed() const
@@ -43,7 +47,11 @@ bool QQuickControls2NSControl::pressed() const
 
 void QQuickControls2NSControl::setPressed(bool pressed)
 {
+    if (m_pressed == pressed)
+        return;
+
     m_pressed = pressed;
+    updateControl();
 }
 
 QRectF QQuickControls2NSControl::contentRect() const
@@ -63,8 +71,11 @@ QQuickText *QQuickControls2NSControl::text() const
 
 void QQuickControls2NSControl::setText(QQuickText *text)
 {
-    qDebug() << Q_FUNC_INFO << "setting text:" << text->text();
+    if (m_text == text)
+        return;
+
    m_text = text;
+   updateControl();
 }
 
 void QQuickControls2NSControl::paint(QPainter *painter)
@@ -74,8 +85,8 @@ void QQuickControls2NSControl::paint(QPainter *painter)
 
 void QQuickControls2NSControl::componentComplete()
 {
-    updateControl();
     QQuickPaintedItem::componentComplete();
+    updateControl();
 }
 
 QPixmap QQuickControls2NSControl::createPixmap()
@@ -135,6 +146,9 @@ void QQuickControls2NSControl::setFont(NSControl *control)
 
 void QQuickControls2NSControl::updateControl()
 {
+    if (!isComponentComplete())
+        return;
+
     [m_control release];
     m_control = Q_NULLPTR;
 
@@ -151,6 +165,9 @@ void QQuickControls2NSControl::updateControl()
     }
 
     Q_ASSERT(m_control);
+
+    // Update pixmap
+    update();
 }
 
 void QQuickControls2NSControl::createButton()

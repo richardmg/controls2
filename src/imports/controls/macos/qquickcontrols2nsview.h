@@ -71,7 +71,7 @@ private:
 
     QPixmap createPixmap();
     void syncControlSizeWithItemSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight);
-    void setContentRect(const CGRect &cgRect, int x1 = 0, int y1 = 0, int x2 = 0, int y2 = 0);
+    void setContentRect(const CGRect &cgRect, const QMargins &margins = QMargins());
     void setContentRect(const QRectF &rect);
     void calculateAndSetImplicitSize(NSControl *control);
     void setFont(NSControl *control);

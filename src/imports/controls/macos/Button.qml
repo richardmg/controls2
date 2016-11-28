@@ -80,7 +80,7 @@ T.Button {
             verticalAlignment: Text.AlignVCenter
 
             opacity: enabled ? 1.0 : 0.2
-            color: "black"
+            color: "red"
             //onImplicitWidthChanged: print("impl text width:", implicitWidth)
             //onImplicitHeightChanged: print("impl text height:", implicitHeight)
         }
@@ -88,7 +88,7 @@ T.Button {
 
     background: NSControl {
         type: NSControl.Button
-        pressed: false//control.pressed
+        pressed: control.pressed
         text: text
         
         //width: 100//text.width

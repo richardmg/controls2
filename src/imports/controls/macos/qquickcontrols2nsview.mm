@@ -101,9 +101,9 @@ QPixmap QQuickControls2NSControl::createPixmap()
     return pixmap;
 }
 
-void QQuickControls2NSControl::setContentRect(const CGRect &cgRect, int x1, int y1, int x2, int y2)
+void QQuickControls2NSControl::setContentRect(const CGRect &cgRect, const QMargins &margins)
 {
-    setContentRect(QRectF::fromCGRect(cgRect).adjusted(x1, y1, x2, y2));
+    setContentRect(QRectF::fromCGRect(cgRect).adjusted(margins.left(), margins.top(), margins.right(), margins.bottom()));
 }
 
 void QQuickControls2NSControl::setContentRect(const QRectF &rect)
@@ -187,12 +187,22 @@ void QQuickControls2NSControl::createButton()
         button.title = m_text->text().toNSString();
     }
 
+    QMargins contentRectMargins;
+
+    if (m_pressed) {
+        button.highlighted = YES;
+        contentRectMargins += QMargins(-1, 4, 0, 0);
+    } else {
+        contentRectMargins += QMargins(-1, 1, 0, 0);
+    }
+
     calculateAndSetImplicitSize(button);
     syncControlSizeWithItemSize(button, false, false);
-    setContentRect(button.bounds, -1, 1);
+    setContentRect(button.bounds, contentRectMargins);
+
 
     // Remove title before taking snapshot
-    button.title = @"";
+    //button.title = @"";
 
     m_control = button;
 }

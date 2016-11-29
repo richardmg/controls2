@@ -196,6 +196,8 @@ void QQuickControls2NSControl::createButton()
         contentRectMargins += QMargins(-1, 1, 0, 0);
     }
 
+    button.bezelStyle = NSRoundedBezelStyle;
+
     calculateAndSetImplicitSize(button);
     syncControlSizeWithItemSize(button, false, false);
     setContentRect(button.bounds, contentRectMargins);

@@ -85,6 +85,9 @@ void QtQuickControls2macOSStylePlugin::registerTypes(const char *uri)
     qmlRegisterUncreatableType<QQuickMacOSStyle>(uri, 2, 0, "MacOS", tr("MacOS is an attached property"));
     qmlRegisterRevision<QQuickMacOSStyle, 1>(uri, 2, 1);
     qmlRegisterType<QQuickControls2NSControl>(uri, 2, 0, "NSControl");
+#ifdef INCLUDE_FPS
+    qmlRegisterType<FPS>(uri, 2, 0, "FPS");
+#endif
 //    QByteArray import = QByteArray(uri);
 //    qmlRegisterType(typeUrl(QStringLiteral("Button.qml")), import, 2, 0, "Button");
 }

@@ -79,6 +79,9 @@ T.Button {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
+            enabled: false
+            visible: false
+
             opacity: enabled ? 1.0 : 0.2
             color: "red"
             //onImplicitWidthChanged: print("impl text width:", implicitWidth)

@@ -9,6 +9,8 @@ LIBS += -framework AppKit
 
 DEFINES += QT_NO_CAST_TO_ASCII QT_NO_CAST_FROM_ASCII
 
+DEFINES += INCLUDE_FPS
+
 OTHER_FILES += \
     qmldir
 

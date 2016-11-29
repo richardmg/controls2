@@ -26,7 +26,8 @@ CONFIG += no_cxx_module
 load(qml_plugin)
 
 HEADERS += \
-    qquickcontrols2nsview.h
+    qquickcontrols2nsview.h \
+    fps.h
 
 OBJECTIVE_SOURCES += \
     qquickcontrols2nsview.mm

@@ -212,9 +212,11 @@ void QQuickControls2NSControl::createButton()
 void QQuickControls2NSControl::createComboBox()
 {
     NSComboBox *combobox = [[NSComboBox alloc] initWithFrame:NSZeroRect];
-    syncControlSizeWithItemSize(combobox, false, true);
 
+    calculateAndSetImplicitSize(combobox);
+    syncControlSizeWithItemSize(combobox, false, true);
     setContentRect(combobox.bounds);
+
     m_control = combobox;
 }
 

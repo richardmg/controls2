@@ -1,2 +1,3 @@
 QML_FILES += \
-    $$PWD/Button.qml
+    $$PWD/Button.qml \
+    $$PWD/ComboBox.qml

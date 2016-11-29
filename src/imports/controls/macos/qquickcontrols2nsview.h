@@ -68,17 +68,17 @@ private:
     QRectF m_contentRect;
     bool m_snapshotFailed;
     QQuickText *m_text;
-    NSControl *m_control;
+    QPixmap m_pixmap;
 
-    QPixmap createPixmap();
+    QPixmap createPixmap(NSControl *control);
     void syncControlSizeWithItemSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight);
     void setContentRect(const CGRect &cgRect, const QMargins &margins = QMargins());
     void setContentRect(const QRectF &rect);
     void calculateAndSetImplicitSize(NSControl *control);
     void setFont(NSControl *control);
 
-    void createButton();
-    void createComboBox();
+    NSControl *createButton();
+    NSControl *createComboBox();
 };
 
 QT_END_NAMESPACE

@@ -56,8 +56,6 @@ public:
     virtual void paint(QPainter *painter) override;
     virtual void componentComplete() override;
 
-    Q_INVOKABLE void updateControl();
-
 Q_SIGNALS:
     void contentRectChanged();
     void snapshotFailedChanged(bool snapshotFailed);
@@ -68,9 +66,10 @@ private:
     QRectF m_contentRect;
     bool m_snapshotFailed;
     QQuickText *m_text;
-    QPixmap m_pixmap;
 
+    QPixmap createPixmap();
     QPixmap createPixmap(NSControl *control);
+
     void syncControlSizeWithItemSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight);
     void setContentRect(const CGRect &cgRect, const QMargins &margins = QMargins());
     void setContentRect(const QRectF &rect);

@@ -35,7 +35,7 @@ void QQuickControls2NSControl::setType(QQuickControls2NSControl::Type type)
         return;
 
    m_type = type;
-   updateControl();
+   update();
 }
 
 bool QQuickControls2NSControl::pressed() const
@@ -49,7 +49,7 @@ void QQuickControls2NSControl::setPressed(bool pressed)
         return;
 
     m_pressed = pressed;
-    updateControl();
+    update();
 }
 
 QRectF QQuickControls2NSControl::contentRect() const
@@ -73,30 +73,24 @@ void QQuickControls2NSControl::setText(QQuickText *text)
         return;
 
    m_text = text;
-   updateControl();
+   update();
 }
 
 void QQuickControls2NSControl::paint(QPainter *painter)
 {
-    painter->drawPixmap(0, 0, m_pixmap);
+    // Note: at this point is does not really matter where the pixmap
+    // came from WRT performance. Even if QQuickPaintedItem uses a
+    // texture atlas for all drawn pixmaps, it will probably not detect
+    // that we draw the same pixmap (?). So in order to let to controls share
+    // the same texture, we should probaly create a BorderImage subclass
+    // instead.
+    painter->drawPixmap(0, 0, createPixmap());
 }
 
 void QQuickControls2NSControl::componentComplete()
 {
     QQuickPaintedItem::componentComplete();
-    updateControl();
-}
-
-QPixmap QQuickControls2NSControl::createPixmap(NSControl *control)
-{
-    // todo: copy all pixmaps into atlas FBO?
-    QPixmap pixmap(QSizeF::fromCGSize(control.bounds.size).toSize());
-    pixmap.fill(Qt::transparent);
-    QMacCGContext ctx(&pixmap);
-
-    control.wantsLayer = YES;
-    [control.layer drawInContext:ctx];
-    return pixmap;
+    createPixmap();
 }
 
 void QQuickControls2NSControl::setContentRect(const CGRect &cgRect, const QMargins &margins)
@@ -142,11 +136,20 @@ void QQuickControls2NSControl::setFont(NSControl *control)
     control.font = [NSFont fontWithName:family size:pointSize];
 }
 
-void QQuickControls2NSControl::updateControl()
+QPixmap QQuickControls2NSControl::createPixmap(NSControl *control)
 {
-    if (!isComponentComplete())
-        return;
+    // todo: copy all pixmaps into atlas FBO?
+    QPixmap pixmap(QSizeF::fromCGSize(control.bounds.size).toSize());
+    pixmap.fill(Qt::transparent);
+    QMacCGContext ctx(&pixmap);
 
+    control.wantsLayer = YES;
+    [control.layer drawInContext:ctx];
+    return pixmap;
+}
+
+QPixmap QQuickControls2NSControl::createPixmap()
+{
     NSControl *control = nullptr;
 
     switch(m_type) {
@@ -163,10 +166,9 @@ void QQuickControls2NSControl::updateControl()
 
     Q_ASSERT(control);
 
-    // Update pixmap
-    m_pixmap = createPixmap(control);
+    QPixmap pixmap = createPixmap(control);
     [control release];
-    update();
+    return pixmap;
 }
 
 NSControl *QQuickControls2NSControl::createButton()

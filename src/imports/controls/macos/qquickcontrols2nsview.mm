@@ -224,21 +224,12 @@ void QQuickControls2NSControl::updateButton()
         break;
     }
 
-    if (m_text) {
-        updateFont();
-        s_nsButton.title = m_text->text().toNSString();
-    }
-
-    QMargins contentRectMargins;
-
-    if (m_pressed) {
-        s_nsButton.highlighted = YES;
-        contentRectMargins += QMargins(-1, 4, 0, 0);
-    } else {
-        contentRectMargins += QMargins(-1, 1, 0, 0);
-    }
-
+    updateFont();
+    s_nsButton.title = m_text ? m_text->text().toNSString() : @"";
+    s_nsButton.highlighted = m_pressed;
     s_nsButton.bezelStyle = NSRoundedBezelStyle;
+
+    QMargins contentRectMargins = m_pressed ? QMargins(-1, 4, 0, 0) : QMargins(-1, 1, 0, 0);
 
     updateImplicitSize();
     updateContentRect(s_nsButton.bounds, contentRectMargins);

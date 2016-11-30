@@ -43,6 +43,8 @@ T.Button {
 
     implicitWidth: nsControl.implicitSize.width
     implicitHeight: nsControl.implicitSize.height
+//    implicitWidth: background.implicitWidth
+//    implicitHeight: background.implicitHeight
 
     Text {
        id: foo
@@ -78,7 +80,14 @@ T.Button {
     }
 
     background: BorderImage {
+        //source: "/Users/richard/tmp/ButtonSnap.png"
         source: nsControl.url
+        border.left: 10
+        border.right: 10
+        border.top: 10
+        border.bottom: 10
+        horizontalTileMode: BorderImage.Stretch
+        verticalTileMode: BorderImage.Stretch
     }
 
     NSControl {

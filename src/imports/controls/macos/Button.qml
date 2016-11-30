@@ -69,8 +69,8 @@ T.Button {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            enabled: false
-            visible: false
+            //enabled: false
+            //visible: false
 
             opacity: enabled ? 1.0 : 0.2
             color: "red"
@@ -95,5 +95,6 @@ T.Button {
         type: NSControl.Button
         pressed: control.pressed
         text: text
+        onImplicitSizeChanged: print("implicit size:", implicitWidth, implicitHeight)
     }
 }

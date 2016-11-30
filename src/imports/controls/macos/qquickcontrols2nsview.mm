@@ -182,7 +182,9 @@ void QQuickControls2NSControl::updateFont()
 void QQuickControls2NSControl::updateUrl()
 {
     QString urlString = QStringLiteral("image://nscontrol/")
-            + QString::number(int(m_type));
+            + QString::number(int(m_type))
+            + QStringLiteral(",")
+            + QString::number(int(m_pressed));
 
     QUrl url(urlString);
 

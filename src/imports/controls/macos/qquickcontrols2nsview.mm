@@ -156,10 +156,10 @@ void QQuickControls2NSControl::updateContentRect(const QRectF &rect)
     emit contentRectChanged();
 }
 
-void QQuickControls2NSControl::updateImplicitSize(NSControl *control)
+void QQuickControls2NSControl::updateImplicitSize()
 {
-    [control sizeToFit];
-    QSizeF size = QSizeF::fromCGSize(control.bounds.size);
+    [m_control sizeToFit];
+    QSizeF size = QSizeF::fromCGSize(m_control.bounds.size);
 
 
     if (size == m_implicitSize)
@@ -169,19 +169,21 @@ void QQuickControls2NSControl::updateImplicitSize(NSControl *control)
     emit implicitSizeChanged();
 }
 
-void QQuickControls2NSControl::updateFont(NSControl *control)
+void QQuickControls2NSControl::updateFont()
 {
     if (!m_text)
         return;
 
     NSString *family = m_text->font().family().toNSString();
     int pointSize = m_text->font().pointSize();
-    control.font = [NSFont fontWithName:family size:pointSize];
+    m_control.font = [NSFont fontWithName:family size:pointSize];
 }
 
 void QQuickControls2NSControl::updateUrl()
 {
-    QString urlString = QString::number(int(m_type));
+    QString urlString = QStringLiteral("image://nscontrol/")
+            + QString::number(int(m_type));
+
     QUrl url(urlString);
 
     if (url == m_url)
@@ -223,7 +225,7 @@ void QQuickControls2NSControl::updateButton()
     }
 
     if (m_text) {
-        updateFont(s_nsButton);
+        updateFont();
         s_nsButton.title = m_text->text().toNSString();
     }
 
@@ -238,7 +240,7 @@ void QQuickControls2NSControl::updateButton()
 
     s_nsButton.bezelStyle = NSRoundedBezelStyle;
 
-    updateImplicitSize(s_nsButton);
+    updateImplicitSize();
     updateContentRect(s_nsButton.bounds, contentRectMargins);
 }
 
@@ -248,7 +250,7 @@ void QQuickControls2NSControl::updateComboBox()
         s_nsComboBox = [[NSComboBox alloc] initWithFrame:NSZeroRect];
     m_control = s_nsComboBox;
 
-    updateImplicitSize(s_nsComboBox);
+    updateImplicitSize();
     updateContentRect(s_nsComboBox.bounds);
 }
 

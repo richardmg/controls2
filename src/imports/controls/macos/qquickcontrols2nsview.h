@@ -115,8 +115,8 @@ private:
 
     void updateContentRect(const CGRect &cgRect, const QMargins &margins = QMargins());
     void updateContentRect(const QRectF &rect);
-    void updateImplicitSize(NSControl *control);
-    void updateFont(NSControl *control);
+    void updateImplicitSize();
+    void updateFont();
     void updateUrl();
 
     void update();

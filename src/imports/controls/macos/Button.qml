@@ -41,8 +41,8 @@ import QtQuick.Controls.macOS 2.1
 T.Button {
     id: control
 
-    implicitWidth: background.implicitWidth
-    implicitHeight: background.implicitHeight
+    implicitWidth: nsControl.implicitSize.width
+    implicitHeight: nsControl.implicitSize.height
 
     Text {
        id: foo
@@ -51,18 +51,6 @@ T.Button {
     }
 
     //font: foo.font
-
-    /*
-    implicitWidth: Math.max(background ? background.implicitWidth : 0,
-                            contentItem.implicitWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(background ? background.implicitHeight : 0,
-                             contentItem.implicitHeight + topPadding + bottomPadding)
-    */
-//    baselineOffset: contentItem.y + contentItem.baselineOffset
-
-//    padding: 8
-//    topPadding: padding - 4
-//    bottomPadding: padding - 4
 
     contentItem: Item {
         implicitWidth: text.implicitWidth
@@ -90,8 +78,7 @@ T.Button {
     }
 
     background: BorderImage {
-        //source: "/Users/richard/tmp/ButtonSnap.png"
-        source: "image://nscontrol/foo.png"
+        source: nsControl.url
     }
 
     NSControl {

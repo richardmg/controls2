@@ -20,17 +20,15 @@ QT_BEGIN_NAMESPACE
 
 Q_FORWARD_DECLARE_OBJC_CLASS(NSControl);
 
-class QQuickControls2NSControl : public QObject, public QQmlParserStatus
+class QQuickControls2NSControl : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool pressed READ pressed WRITE setPressed FINAL)
     Q_PROPERTY(Type type READ type WRITE setType FINAL)
     Q_PROPERTY(QRectF contentRect READ contentRect NOTIFY contentRectChanged FINAL)
-    Q_PROPERTY(QSizeF implicitSize READ implicitSize NOTIFY implicitSizeChanged FINAL)
     Q_PROPERTY(QQuickText *text READ text WRITE setText FINAL)
-    Q_PROPERTY(QUrl url READ url NOTIFY urlChanged FINAL)
-
-    Q_INTERFACES(QQmlParserStatus)
+    Q_PROPERTY(bool url READ url NOTIFY urlChanged FINAL)
+    Q_PROPERTY(bool snapshotFailed READ snapshotFailed NOTIFY snapshotFailedChanged FINAL)
 
 public:
     enum Type {
@@ -50,37 +48,37 @@ public:
     bool pressed() const;
     void setPressed(bool pressed);
     QRectF contentRect() const;
-    QSizeF implicitSize() const;
     bool snapshotFailed() const;
     QQuickText *text() const;
     void setText(QQuickText *text);
-    QUrl url() const;
+    bool url() const;
 
-    virtual void classBegin() override {};
     virtual void componentComplete() override;
 
 Q_SIGNALS:
     void contentRectChanged();
-    void implicitSizeChanged();
-    void urlChanged();
+    void urlChanged(bool url);
+    void snapshotFailedChanged(bool snapshotFailed);
 
 private:
     Type m_type;
     bool m_pressed;
     QRectF m_contentRect;
-    QSizeF m_implicitSize;
+    bool m_snapshotFailed;
     QQuickText *m_text;
-    QUrl m_url;
+    bool m_url;
 
-    void updateContentRect(const CGRect &cgRect, const QMargins &margins = QMargins());
-    void updateContentRect(const QRectF &rect);
-    void updateImplicitSize(NSControl *control);
-    void updateFont(NSControl *control);
-    void updateUrl();
+    QPixmap createPixmap();
+    QPixmap createPixmap(NSControl *control);
 
-    void update();
-    void updateButton();
-    void updateComboBox();
+    void syncControlSizeWithItemSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight);
+    void setContentRect(const CGRect &cgRect, const QMargins &margins = QMargins());
+    void setContentRect(const QRectF &rect);
+    void calculateAndSetImplicitSize(NSControl *control);
+    void setFont(NSControl *control);
+
+    NSControl *createButton();
+    NSControl *createComboBox();
 };
 
 QT_END_NAMESPACE

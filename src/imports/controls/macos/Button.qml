@@ -69,10 +69,10 @@ T.Button {
         implicitHeight: text.implicitHeight
         Text {
             id: text
-            x: background.contentRect.x
-            y: background.contentRect.y
-            width: background.contentRect.width
-            height: background.contentRect.height
+            x: nsControl.contentRect.x
+            y: nsControl.contentRect.y
+            width: nsControl.contentRect.width
+            height: nsControl.contentRect.height
             text: control.text
             font: control.font
             elide: Text.ElideRight
@@ -89,24 +89,14 @@ T.Button {
         }
     }
 
-    background: NSControl {
+    background: BorderImage {
+        source: "/Users/richard/tmp/ButtonSnap.png"
+    }
+
+    NSControl {
+        id: nsControl
         type: NSControl.Button
         pressed: control.pressed
         text: text
-        
-        //width: 100//text.width
-        //height: 100//text.height
-
-        // Problemet er at nscontrol ikke har noen label, og dermed vil den calculere
-        // en alt for liten knapp i sizeToFit.
-        // 1. enten gi med en text, selv om dette blir unøyaktig
-        // 2. skriv om slik at text blir førende for størrelsen i horisontal retning
-        //  - høres mest fornuftig ut
-        //  - kanskje sende med text.width og text.height som ønsket content size?
-
-        onSnapshotFailedChanged: {
-            print("Snapshot failed, fall back to draw the control, or use default style")
-            // or add 'fallback:' prop that points to a component that gets instanciated automatically
-        }
     }
 }

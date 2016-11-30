@@ -10,14 +10,14 @@
 QT_BEGIN_NAMESPACE
 
 QQuickControls2NSControl::QQuickControls2NSControl(QQuickItem *parent)
-    : QQuickPaintedItem(parent)
+    : QObject(parent)
     , m_type(Button)
     , m_pressed(false)
     , m_contentRect(QRectF())
-    , m_snapshotFailed(false)
+    , m_implicitSize(QSize())
     , m_text(Q_NULLPTR)
+    , m_url(QUrl())
 {
-    setFlag(ItemHasContents);
 }
 
 QQuickControls2NSControl::~QQuickControls2NSControl()
@@ -57,9 +57,9 @@ QRectF QQuickControls2NSControl::contentRect() const
     return m_contentRect;
 }
 
-bool QQuickControls2NSControl::snapshotFailed() const
+QSizeF QQuickControls2NSControl::implicitSize() const
 {
-    return m_snapshotFailed;
+    return m_implicitSize;
 }
 
 QQuickText *QQuickControls2NSControl::text() const
@@ -76,29 +76,22 @@ void QQuickControls2NSControl::setText(QQuickText *text)
    update();
 }
 
-void QQuickControls2NSControl::paint(QPainter *painter)
+QUrl QQuickControls2NSControl::url() const
 {
-    // Note: at this point is does not really matter where the pixmap
-    // came from WRT performance. Even if QQuickPaintedItem uses a
-    // texture atlas for all drawn pixmaps, it will probably not detect
-    // that we draw the same pixmap (?). So in order to let to controls share
-    // the same texture, we should probaly create a BorderImage subclass
-    // instead.
-    painter->drawPixmap(0, 0, createPixmap());
+    return m_url;
 }
 
 void QQuickControls2NSControl::componentComplete()
 {
-    QQuickPaintedItem::componentComplete();
-    createPixmap();
+    update();
 }
 
-void QQuickControls2NSControl::setContentRect(const CGRect &cgRect, const QMargins &margins)
+void QQuickControls2NSControl::updateContentRect(const CGRect &cgRect, const QMargins &margins)
 {
-    setContentRect(QRectF::fromCGRect(cgRect).adjusted(margins.left(), margins.top(), margins.right(), margins.bottom()));
+    updateContentRect(QRectF::fromCGRect(cgRect).adjusted(margins.left(), margins.top(), margins.right(), margins.bottom()));
 }
 
-void QQuickControls2NSControl::setContentRect(const QRectF &rect)
+void QQuickControls2NSControl::updateContentRect(const QRectF &rect)
 {
     if (rect == m_contentRect)
         return;
@@ -107,26 +100,19 @@ void QQuickControls2NSControl::setContentRect(const QRectF &rect)
     emit contentRectChanged();
 }
 
-void QQuickControls2NSControl::calculateAndSetImplicitSize(NSControl *control)
+void QQuickControls2NSControl::updateImplicitSize(NSControl *control)
 {
     [control sizeToFit];
-    NSRect bounds = control.bounds;
-    setImplicitSize(bounds.size.width, bounds.size.height);
+    QSizeF size = QSizeF::fromCGSize(control.bounds.size);
+
+    if (size == m_implicitSize)
+        return;
+
+    m_implicitSize = size;
+    emit implicitSizeChanged();
 }
 
-void QQuickControls2NSControl::syncControlSizeWithItemSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight)
-{
-    NSRect bounds = control.bounds;
-
-    if (!hasFixedWidth)
-        bounds.size.width = width();
-    if (!hasFixedHeight)
-        bounds.size.height = height();
-
-    control.bounds = bounds;
-}
-
-void QQuickControls2NSControl::setFont(NSControl *control)
+void QQuickControls2NSControl::updateFont(NSControl *control)
 {
     if (!m_text)
         return;
@@ -136,44 +122,39 @@ void QQuickControls2NSControl::setFont(NSControl *control)
     control.font = [NSFont fontWithName:family size:pointSize];
 }
 
-QPixmap QQuickControls2NSControl::createPixmap(NSControl *control)
+void QQuickControls2NSControl::updateUrl()
 {
-    // todo: copy all pixmaps into atlas FBO?
-    QPixmap pixmap(QSizeF::fromCGSize(control.bounds.size).toSize());
-    pixmap.fill(Qt::transparent);
-    QMacCGContext ctx(&pixmap);
+    QString urlString = QString::number(int(m_type));
+    QUrl url(urlString);
 
-    control.wantsLayer = YES;
-    [control.layer drawInContext:ctx];
-    return pixmap;
+    if (url == m_url)
+        return;
+
+    m_url = url;
+    emit urlChanged();
 }
 
-QPixmap QQuickControls2NSControl::createPixmap()
+void QQuickControls2NSControl::update()
 {
-    NSControl *control = nullptr;
-
     switch(m_type) {
     case Button:
     case CheckBox:
-        control = createButton();
+        updateButton();
         break;
     case ComboBox:
-        control = createComboBox();
+        updateComboBox();
         break;
-    default: {
-        Q_UNREACHABLE(); }
+    default:
+        Q_UNREACHABLE();
     }
 
-    Q_ASSERT(control);
-
-    QPixmap pixmap = createPixmap(control);
-    [control release];
-    return pixmap;
+    updateUrl();
 }
 
-NSControl *QQuickControls2NSControl::createButton()
+void QQuickControls2NSControl::updateButton()
 {
-    NSButton *button = [[NSButton alloc] initWithFrame:NSZeroRect];
+    // Create on setType, and cast here?
+    NSButton *button = [[[NSButton alloc] initWithFrame:NSZeroRect] autorelease];
 
     switch(m_type) {
     case CheckBox:
@@ -184,7 +165,7 @@ NSControl *QQuickControls2NSControl::createButton()
     }
 
     if (m_text) {
-        setFont(button);
+        updateFont(button);
         button.title = m_text->text().toNSString();
     }
 
@@ -199,26 +180,16 @@ NSControl *QQuickControls2NSControl::createButton()
 
     button.bezelStyle = NSRoundedBezelStyle;
 
-    calculateAndSetImplicitSize(button);
-    syncControlSizeWithItemSize(button, false, false);
-    setContentRect(button.bounds, contentRectMargins);
-
-
-    // Remove title before taking snapshot
-    //button.title = @"";
-
-    return button;
+    updateImplicitSize(button);
+    updateContentRect(button.bounds, contentRectMargins);
 }
 
-NSControl *QQuickControls2NSControl::createComboBox()
+void QQuickControls2NSControl::updateComboBox()
 {
-    NSComboBox *combobox = [[NSComboBox alloc] initWithFrame:NSZeroRect];
+    NSComboBox *combobox = [[[NSComboBox alloc] initWithFrame:NSZeroRect] autorelease];
 
-    calculateAndSetImplicitSize(combobox);
-    syncControlSizeWithItemSize(combobox, false, true);
-    setContentRect(combobox.bounds);
-
-    return combobox;
+    updateImplicitSize(combobox);
+    updateContentRect(combobox.bounds);
 }
 
 #include "moc_qquickcontrols2nsview.cpp"

@@ -55,6 +55,8 @@
 QT_BEGIN_NAMESPACE
 
 Q_FORWARD_DECLARE_OBJC_CLASS(NSControl);
+Q_FORWARD_DECLARE_OBJC_CLASS(NSButton);
+Q_FORWARD_DECLARE_OBJC_CLASS(NSComboBox);
 
 class QQuickControls2NSControl : public QObject, public QQmlParserStatus
 {
@@ -96,6 +98,7 @@ public:
 
     virtual void classBegin() override {};
     virtual void componentComplete() override;
+
 Q_SIGNALS:
     void contentRectChanged();
     void implicitSizeChanged();
@@ -108,6 +111,7 @@ private:
     QSizeF m_implicitSize;
     QQuickText *m_text;
     QUrl m_url;
+    NSControl *m_control;
 
     void updateContentRect(const CGRect &cgRect, const QMargins &margins = QMargins());
     void updateContentRect(const QRectF &rect);
@@ -118,6 +122,9 @@ private:
     void update();
     void updateButton();
     void updateComboBox();
+
+    static NSButton *s_nsButton;
+    static NSComboBox *s_nsComboBox;
 };
 
 QT_END_NAMESPACE

@@ -35,6 +35,7 @@
 ****************************************************************************/
 
 #include "imageprovidernscontrol.h"
+#include "qquickcontrols2nsview.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -49,17 +50,13 @@ ImageProviderNSControl::~ImageProviderNSControl()
 
 QPixmap ImageProviderNSControl::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
 {
-    int width = 100;
-    int height = 50;
+    QQuickControls2NSControl control;
+    QPixmap snapShot = control.takeSnapshot();
 
     if (size)
-        *size = QSize(width, height);
-    QPixmap pixmap(requestedSize.width() > 0 ? requestedSize.width() : width,
-                   requestedSize.height() > 0 ? requestedSize.height() : height);
-    pixmap.fill(Qt::red);
+        *size = snapShot.size();
 
-    return pixmap;
+    return snapShot;
 }
-
 
 QT_END_NAMESPACE

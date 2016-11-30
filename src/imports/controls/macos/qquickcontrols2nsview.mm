@@ -45,14 +45,18 @@
 
 QT_BEGIN_NAMESPACE
 
+NSButton *QQuickControls2NSControl::s_nsButton = 0;
+NSComboBox *QQuickControls2NSControl::s_nsComboBox = 0;
+
 QQuickControls2NSControl::QQuickControls2NSControl(QQuickItem *parent)
     : QObject(parent)
     , m_type(Button)
     , m_pressed(false)
     , m_contentRect(QRectF())
     , m_implicitSize(QSize())
-    , m_text(Q_NULLPTR)
+    , m_text(nullptr)
     , m_url(QUrl())
+    , m_control(nullptr)
 {
 }
 
@@ -124,16 +128,18 @@ void QQuickControls2NSControl::componentComplete()
 
 QPixmap QQuickControls2NSControl::takeSnapshot()
 {
-    /*
-    // todo: copy all pixmaps into atlas FBO?
-    QPixmap pixmap(QSizeF::fromCGSize(control.bounds.size).toSize());
+    // m_control points to a shared control, so ensure
+    // we update it to mirror this instance before the snapshot
+    update();
+
+    QPixmap pixmap(QSizeF::fromCGSize(m_control.bounds.size).toSize());
     pixmap.fill(Qt::transparent);
     QMacCGContext ctx(&pixmap);
 
-    control.wantsLayer = YES;
-    [control.layer drawInContext:ctx];
+    m_control.wantsLayer = YES;
+    [m_control.layer drawInContext:ctx];
+
     return pixmap;
-    */ return QPixmap();
 }
 
 void QQuickControls2NSControl::updateContentRect(const CGRect &cgRect, const QMargins &margins)
@@ -154,6 +160,7 @@ void QQuickControls2NSControl::updateImplicitSize(NSControl *control)
 {
     [control sizeToFit];
     QSizeF size = QSizeF::fromCGSize(control.bounds.size);
+
 
     if (size == m_implicitSize)
         return;
@@ -203,43 +210,46 @@ void QQuickControls2NSControl::update()
 
 void QQuickControls2NSControl::updateButton()
 {
-    // Create on setType, and cast here?
-    NSButton *button = [[[NSButton alloc] initWithFrame:NSZeroRect] autorelease];
+    if (!s_nsButton)
+        s_nsButton = [[NSButton alloc] initWithFrame:NSZeroRect];
+    m_control = s_nsButton;
 
     switch(m_type) {
     case CheckBox:
-        button.buttonType = NSSwitchButton;
+        s_nsButton.buttonType = NSSwitchButton;
         break;
     default:
         break;
     }
 
     if (m_text) {
-        updateFont(button);
-        button.title = m_text->text().toNSString();
+        updateFont(s_nsButton);
+        s_nsButton.title = m_text->text().toNSString();
     }
 
     QMargins contentRectMargins;
 
     if (m_pressed) {
-        button.highlighted = YES;
+        s_nsButton.highlighted = YES;
         contentRectMargins += QMargins(-1, 4, 0, 0);
     } else {
         contentRectMargins += QMargins(-1, 1, 0, 0);
     }
 
-    button.bezelStyle = NSRoundedBezelStyle;
+    s_nsButton.bezelStyle = NSRoundedBezelStyle;
 
-    updateImplicitSize(button);
-    updateContentRect(button.bounds, contentRectMargins);
+    updateImplicitSize(s_nsButton);
+    updateContentRect(s_nsButton.bounds, contentRectMargins);
 }
 
 void QQuickControls2NSControl::updateComboBox()
 {
-    NSComboBox *combobox = [[[NSComboBox alloc] initWithFrame:NSZeroRect] autorelease];
+    if (!s_nsComboBox)
+        s_nsComboBox = [[NSComboBox alloc] initWithFrame:NSZeroRect];
+    m_control = s_nsComboBox;
 
-    updateImplicitSize(combobox);
-    updateContentRect(combobox.bounds);
+    updateImplicitSize(s_nsComboBox);
+    updateContentRect(s_nsComboBox.bounds);
 }
 
 #include "moc_qquickcontrols2nsview.cpp"

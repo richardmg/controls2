@@ -17,13 +17,12 @@ SOURCES += \
 
 HEADERS += \
     qquickcontrols2nsview.h \
-    #imageprovidernscontrol.h \
+    imageprovidernscontrol.h \
     fps.h
 
 OBJECTIVE_SOURCES += \
-    qquickcontrols2nsview.mm
-# \
-#    imageprovidernscontrol.mm
+    qquickcontrols2nsview.mm \
+    imageprovidernscontrol.mm
 
 RESOURCES += \
     $$PWD/qtquickcontrols2macosstyleplugin.qrc

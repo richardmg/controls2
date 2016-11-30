@@ -90,7 +90,8 @@ T.Button {
     }
 
     background: BorderImage {
-        source: "/Users/richard/tmp/ButtonSnap.png"
+        //source: "/Users/richard/tmp/ButtonSnap.png"
+        source: "image://nscontrol/foo.png"
     }
 
     NSControl {

@@ -1,5 +1,41 @@
-#ifndef QQUICKCONTROLS2NSVIEW_H
-#define QQUICKCONTROLS2NSVIEW_H
+/****************************************************************************
+**
+** Copyright (C) 2016 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
+**
+** This file is part of the Qt Quick Controls 2 module of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:LGPL3$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 3 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPLv3 included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: https://www.gnu.org/licenses/lgpl.html.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 2.0 or later as published by the Free
+** Software Foundation and appearing in the file LICENSE.GPL included in
+** the packaging of this file. Please review the following information to
+** ensure the GNU General Public License version 2.0 requirements will be
+** met: http://www.gnu.org/licenses/gpl-2.0.html.
+**
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+#ifndef IMAGEPROVIDERNSCONTROL_H
+#define IMAGEPROVIDERNSCONTROL_H
 
 //
 //  W A R N I N G
@@ -15,74 +51,19 @@
 #include <QtGui/qpixmap.h>
 #include <QtQuick/qquickitem.h>
 #include <QtQuick/private/qquicktext_p.h>
+#include <QtQuick/qquickimageprovider.h>
 
 QT_BEGIN_NAMESPACE
 
-Q_FORWARD_DECLARE_OBJC_CLASS(NSControl);
-
-class QQuickControls2NSControl : public QObject
+class ImageProviderNSControl : public QQuickImageProvider
 {
-    Q_OBJECT
-    Q_PROPERTY(bool pressed READ pressed WRITE setPressed FINAL)
-    Q_PROPERTY(Type type READ type WRITE setType FINAL)
-    Q_PROPERTY(QRectF contentRect READ contentRect NOTIFY contentRectChanged FINAL)
-    Q_PROPERTY(QQuickText *text READ text WRITE setText FINAL)
-    Q_PROPERTY(bool url READ url NOTIFY urlChanged FINAL)
-    Q_PROPERTY(bool snapshotFailed READ snapshotFailed NOTIFY snapshotFailedChanged FINAL)
-
 public:
-    enum Type {
-        Button,
-        CheckBox,
-        ComboBox,
-    };
+    ImageProviderNSControl();
+    ~ImageProviderNSControl();
 
-    Q_ENUM(Type)
-
-    explicit QQuickControls2NSControl(QQuickItem *parent = nullptr);
-    ~QQuickControls2NSControl();
-
-    Type type() const;
-    void setType(Type type);
-
-    bool pressed() const;
-    void setPressed(bool pressed);
-    QRectF contentRect() const;
-    bool snapshotFailed() const;
-    QQuickText *text() const;
-    void setText(QQuickText *text);
-    bool url() const;
-
-    virtual void componentComplete() override;
-
-Q_SIGNALS:
-    void contentRectChanged();
-    void urlChanged(bool url);
-    void snapshotFailedChanged(bool snapshotFailed);
-
-private:
-    Type m_type;
-    bool m_pressed;
-    QRectF m_contentRect;
-    bool m_snapshotFailed;
-    QQuickText *m_text;
-    bool m_url;
-
-    QPixmap createPixmap();
-    QPixmap createPixmap(NSControl *control);
-
-    void syncControlSizeWithItemSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight);
-    void setContentRect(const CGRect &cgRect, const QMargins &margins = QMargins());
-    void setContentRect(const QRectF &rect);
-    void calculateAndSetImplicitSize(NSControl *control);
-    void setFont(NSControl *control);
-
-    NSControl *createButton();
-    NSControl *createComboBox();
+    QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize);
 };
 
 QT_END_NAMESPACE
 
-QML_DECLARE_TYPE(QQuickControls2NSControl)
-
-#endif // QQUICKCONTROLS2NSVIEW_H
+#endif // IMAGEPROVIDERNSCONTROL_H

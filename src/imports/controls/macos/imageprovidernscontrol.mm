@@ -1,215 +1,65 @@
-#include <AppKit/AppKit.h>
+/****************************************************************************
+**
+** Copyright (C) 2016 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
+**
+** This file is part of the Qt Quick Controls 2 module of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:LGPL3$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 3 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPLv3 included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: https://www.gnu.org/licenses/lgpl.html.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 2.0 or later as published by the Free
+** Software Foundation and appearing in the file LICENSE.GPL included in
+** the packaging of this file. Please review the following information to
+** ensure the GNU General Public License version 2.0 requirements will be
+** met: http://www.gnu.org/licenses/gpl-2.0.html.
+**
+** $QT_END_LICENSE$
+**
+****************************************************************************/
 
-#include <QtGui/qpixmap.h>
-#include <QtGui/qpainter.h>
-
-#include <QtGui/private/qcoregraphics_p.h>
-
-#include "qquickcontrols2nsview.h"
+#include "imageprovidernscontrol.h"
 
 QT_BEGIN_NAMESPACE
 
-QQuickControls2NSControl::QQuickControls2NSControl(QQuickItem *parent)
-    : QQuickPaintedItem(parent)
-    , m_type(Button)
-    , m_pressed(false)
-    , m_contentRect(QRectF())
-    , m_snapshotFailed(false)
-    , m_text(Q_NULLPTR)
-    , m_url(QUrl())
+ImageProviderNSControl::ImageProviderNSControl()
+    : QQuickImageProvider(QQuickImageProvider::Pixmap)
 {
 }
 
-QQuickControls2NSControl::~QQuickControls2NSControl()
+ImageProviderNSControl::~ImageProviderNSControl()
 {
 }
 
-QQuickControls2NSControl::Type QQuickControls2NSControl::type() const
+QPixmap ImageProviderNSControl::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
 {
-   return m_type;
-}
+    int width = 100;
+    int height = 50;
 
-void QQuickControls2NSControl::setType(QQuickControls2NSControl::Type type)
-{
-    if (m_type == type)
-        return;
+    if (size)
+        *size = QSize(width, height);
+    QPixmap pixmap(requestedSize.width() > 0 ? requestedSize.width() : width,
+                   requestedSize.height() > 0 ? requestedSize.height() : height);
+    pixmap.fill(Qt::red);
 
-   m_type = type;
-   update();
-}
-
-bool QQuickControls2NSControl::pressed() const
-{
-    return m_pressed;
-}
-
-void QQuickControls2NSControl::setPressed(bool pressed)
-{
-    if (m_pressed == pressed)
-        return;
-
-    m_pressed = pressed;
-    update();
-}
-
-QRectF QQuickControls2NSControl::contentRect() const
-{
-    return m_contentRect;
-}
-
-bool QQuickControls2NSControl::snapshotFailed() const
-{
-    return m_snapshotFailed;
-}
-
-QQuickText *QQuickControls2NSControl::text() const
-{
-   return m_text;
-}
-
-void QQuickControls2NSControl::setText(QQuickText *text)
-{
-    if (m_text == text)
-        return;
-
-   m_text = text;
-   update();
-}
-
-void QQuickControls2NSControl::componentComplete()
-{
-    QQuickPaintedItem::componentComplete();
-    update();
-}
-
-void QQuickControls2NSControl::setContentRect(const CGRect &cgRect, const QMargins &margins)
-{
-    setContentRect(QRectF::fromCGRect(cgRect).adjusted(margins.left(), margins.top(), margins.right(), margins.bottom()));
-}
-
-void QQuickControls2NSControl::setContentRect(const QRectF &rect)
-{
-    if (rect == m_contentRect)
-        return;
-
-    m_contentRect = rect;
-    emit contentRectChanged();
-}
-
-void QQuickControls2NSControl::calculateAndSetImplicitSize(NSControl *control)
-{
-    [control sizeToFit];
-    NSRect bounds = control.bounds;
-    setImplicitSize(bounds.size.width, bounds.size.height);
-}
-
-void QQuickControls2NSControl::syncControlSizeWithItemSize(NSControl *control, bool hasFixedWidth, bool hasFixedHeight)
-{
-    NSRect bounds = control.bounds;
-
-    if (!hasFixedWidth)
-        bounds.size.width = width();
-    if (!hasFixedHeight)
-        bounds.size.height = height();
-
-    control.bounds = bounds;
-}
-
-void QQuickControls2NSControl::setFont(NSControl *control)
-{
-    if (!m_text)
-        return;
-
-    NSString *family = m_text->font().family().toNSString();
-    int pointSize = m_text->font().pointSize();
-    control.font = [NSFont fontWithName:family size:pointSize];
-}
-
-QPixmap QQuickControls2NSControl::update(NSControl *control)
-{
-    // todo: copy all pixmaps into atlas FBO?
-    QPixmap pixmap(QSizeF::fromCGSize(control.bounds.size).toSize());
-    pixmap.fill(Qt::transparent);
-    QMacCGContext ctx(&pixmap);
-
-    control.wantsLayer = YES;
-    [control.layer drawInContext:ctx];
     return pixmap;
 }
 
-QPixmap QQuickControls2NSControl::update()
-{
-    NSControl *control = nullptr;
-
-    switch(m_type) {
-    case Button:
-    case CheckBox:
-        control = configureButton();
-        break;
-    case ComboBox:
-        control = configureComboBox();
-        break;
-    default: {
-        Q_UNREACHABLE(); }
-    }
-
-    Q_ASSERT(control);
-
-    QPixmap pixmap = update(control);
-    [control release];
-    return pixmap;
-}
-
-NSControl *QQuickControls2NSControl::configureButton()
-{
-    NSButton *button = [[NSButton alloc] initWithFrame:NSZeroRect];
-
-    switch(m_type) {
-    case CheckBox:
-        button.buttonType = NSSwitchButton;
-        break;
-    default:
-        break;
-    }
-
-    if (m_text) {
-        setFont(button);
-        button.title = m_text->text().toNSString();
-    }
-
-    QMargins contentRectMargins;
-
-    if (m_pressed) {
-        button.highlighted = YES;
-        contentRectMargins += QMargins(-1, 4, 0, 0);
-    } else {
-        contentRectMargins += QMargins(-1, 1, 0, 0);
-    }
-
-    button.bezelStyle = NSRoundedBezelStyle;
-
-    calculateAndSetImplicitSize(button);
-    syncControlSizeWithItemSize(button, false, false);
-    setContentRect(button.bounds, contentRectMargins);
-
-
-    // Remove title before taking snapshot
-    //button.title = @"";
-
-    return button;
-}
-
-NSControl *QQuickControls2NSControl::configureComboBox()
-{
-    NSComboBox *combobox = [[NSComboBox alloc] initWithFrame:NSZeroRect];
-
-    calculateAndSetImplicitSize(combobox);
-    syncControlSizeWithItemSize(combobox, false, true);
-    setContentRect(combobox.bounds);
-
-    return combobox;
-}
-
-#include "moc_qquickcontrols2nsview.cpp"
 
 QT_END_NAMESPACE

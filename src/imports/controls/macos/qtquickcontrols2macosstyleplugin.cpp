@@ -36,6 +36,7 @@
 
 #include <QtQuickControls2/private/qquickstyleplugin_p.h>
 #include "qquickcontrols2nsview.h"
+#include "imageprovidernscontrol.h"
 
 #ifdef INCLUDE_FPS
 #include "fps.h"
@@ -100,10 +101,7 @@ void QtQuickControls2macOSStylePlugin::registerTypes(const char *uri)
 void QtQuickControls2macOSStylePlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 {
     QQuickStylePlugin::initializeEngine(engine, uri);
-
-    //engine->addImageProvider(name(), new QQuickColorImageProvider(QStringLiteral(":/qt-project.org/imports/QtQuick/Controls.2/Universal/images")));
-//    QByteArray import = QByteArray(uri) + ".impl";
-//    qmlRegisterType(typeUrl(QStringLiteral("Button.qml")), import, 2, 0, "Button");
+    engine->addImageProvider(QStringLiteral("nscontrol"), new ImageProviderNSControl());
 }
 
 QString QtQuickControls2macOSStylePlugin::name() const

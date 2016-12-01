@@ -41,50 +41,54 @@ import QtQuick.Controls.macOS 2.1
 T.ComboBox {
     id: control
 
-    implicitWidth: background.implicitWidth
-    implicitHeight: background.implicitHeight
+    implicitWidth: nsControl.implicitSize.width
+    implicitHeight: nsControl.implicitSize.height
 
-    Text {
-       id: foo
-       font.family: "verdana"
-       font.pointSize: 12
+//    Text {
+//       id: foo
+//       font.family: "verdana"
+//       font.pointSize: 30
+//       visible: false
+//    }
+
+//    font: foo.font
+
+    contentItem: T.TextField {
+        leftPadding: control.mirrored ? 1 : 12
+        rightPadding: control.mirrored ? 10 : 1
+        topPadding: 5 - control.topPadding
+        bottomPadding: 7 - control.bottomPadding
+
+        text: control.editable ? control.editText : control.displayText
+
+        //enabled: control.editable
+        //autoScroll: control.editable
+        //readOnly: control.popup.visible
+        //inputMethodHints: control.inputMethodHints
+        //validator: control.validator
+
+        font: control.font
+        horizontalAlignment: Text.AlignLeft
+        verticalAlignment: Text.AlignVCenter
     }
 
-    //font: foo.font
-
-    /*
-    implicitWidth: Math.max(background ? background.implicitWidth : 0,
-                            contentItem.implicitWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(background ? background.implicitHeight : 0,
-                             contentItem.implicitHeight + topPadding + bottomPadding)
-    */
-//    baselineOffset: contentItem.y + contentItem.baselineOffset
-
-//    padding: 8
-//    topPadding: padding - 4
-//    bottomPadding: padding - 4
-
-    contentItem: Item {
+    background: BorderImage {
+        source: nsControl.url
+        width: parent.width
+        height: parent.height
+        border.left: sourceSize.width / 2
+        border.right: sourceSize.width / 2
+        border.top: sourceSize.height / 2
+        border.bottom: sourceSize.height / 2
+        horizontalTileMode: BorderImage.Stretch
+        verticalTileMode: BorderImage.Stretch
     }
 
-    background: NSControl {
+    NSControl {
+        id: nsControl
         type: NSControl.ComboBox
         pressed: control.pressed
+        bezelStyle: NSControl.RoundedBezelStyle
         //text: text
-
-        //width: 100//text.width
-        //height: 100//text.height
-
-        // Problemet er at nscontrol ikke har noen label, og dermed vil den calculere
-        // en alt for liten knapp i sizeToFit.
-        // 1. enten gi med en text, selv om dette blir unøyaktig
-        // 2. skriv om slik at text blir førende for størrelsen i horisontal retning
-        //  - høres mest fornuftig ut
-        //  - kanskje sende med text.width og text.height som ønsket content size?
-
-        onSnapshotFailedChanged: {
-            print("Snapshot failed, fall back to draw the control, or use default style")
-            // or add 'fallback:' prop that points to a component that gets instanciated automatically
-        }
     }
 }

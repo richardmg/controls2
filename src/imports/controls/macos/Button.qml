@@ -49,7 +49,8 @@ T.Button {
     Text {
        id: foo
        font.family: "verdana"
-       font.pointSize: 12
+       font.pointSize: 20
+       visible: false
     }
 
     //font: foo.font

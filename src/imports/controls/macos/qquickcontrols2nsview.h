@@ -95,6 +95,8 @@ public:
     QUrl url() const;
 
     QPixmap takeSnapshot();
+    QString toStringID();
+    void configureFromStringID(const QString &id);
 
     virtual void classBegin() override {};
     virtual void componentComplete() override;

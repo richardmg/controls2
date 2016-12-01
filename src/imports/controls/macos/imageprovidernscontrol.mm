@@ -48,10 +48,10 @@ ImageProviderNSControl::~ImageProviderNSControl()
 {
 }
 
-QPixmap ImageProviderNSControl::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
+QPixmap ImageProviderNSControl::requestPixmap(const QString &id, QSize *size, const QSize &)
 {
-    qDebug() << Q_FUNC_INFO << "id:" << id;
     QQuickControls2NSControl control;
+    control.configureFromStringID(id);
     QPixmap snapShot = control.takeSnapshot();
 
     if (size)

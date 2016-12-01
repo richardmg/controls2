@@ -179,14 +179,21 @@ void QQuickControls2NSControl::updateFont()
     m_control.font = [NSFont fontWithName:family size:pointSize];
 }
 
+QString QQuickControls2NSControl::toStringID()
+{
+    return QString::number(int(m_type))
+            + QStringLiteral(",") + QString::number(int(m_pressed));
+}
+
+void QQuickControls2NSControl::configureFromStringID(const QString &id)
+{
+    QStringList args = id.split(QLatin1Char(','));
+    setPressed(bool(args[1].toInt()));
+}
+
 void QQuickControls2NSControl::updateUrl()
 {
-    QString urlString = QStringLiteral("image://nscontrol/")
-            + QString::number(int(m_type))
-            + QStringLiteral("_")
-            + QString::number(int(m_pressed));
-
-    QUrl url(urlString);
+    QUrl url(QStringLiteral("image://nscontrol/") + toStringID());
 
     if (url == m_url)
         return;

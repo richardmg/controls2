@@ -71,7 +71,7 @@ T.Button {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             opacity: enabled ? 1.0 : 0.2
-            color: "red"
+            color: "black"
         }
     }
 
@@ -91,6 +91,7 @@ T.Button {
         id: nsControl
         type: NSControl.Button
         pressed: control.pressed
+        bezelStyle: NSControl.RoundedBezelStyle
         text: text
     }
 }

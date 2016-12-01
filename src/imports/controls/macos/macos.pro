@@ -12,15 +12,13 @@ LIBS += -framework AppKit
 DEFINES += QT_NO_CAST_TO_ASCII QT_NO_CAST_FROM_ASCII
 DEFINES += INCLUDE_FPS
 
-SOURCES += \
-    $$PWD/qqc2macosstyleplugin.cpp
-
 HEADERS += \
     fps.h \
     qqc2nscontrolimageprovider.h \
     qqc2nscontrol.h
 
 OBJECTIVE_SOURCES += \
+    qqc2macosstyleplugin.mm \
     qqc2nscontrolimageprovider.mm \
     qqc2nscontrol.mm
 

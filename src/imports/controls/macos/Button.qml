@@ -43,17 +43,15 @@ T.Button {
 
     implicitWidth: nsControl.implicitSize.width
     implicitHeight: nsControl.implicitSize.height
-//    implicitWidth: background.implicitWidth
-//    implicitHeight: background.implicitHeight
 
-    Text {
-       id: foo
-       font.family: "verdana"
-       font.pointSize: 20
-       visible: false
-    }
+//    Text {
+//       id: foo
+//       font.family: "verdana"
+//       font.pointSize: 30
+//       visible: false
+//    }
 
-    //font: foo.font
+//    font: foo.font
 
     contentItem: Item {
         implicitWidth: text.implicitWidth
@@ -80,9 +78,9 @@ T.Button {
         width: parent.width
         height: parent.height
         border.left: sourceSize.width / 2
-        border.right: border.left
+        border.right: sourceSize.width / 2
         border.top: sourceSize.height / 2
-        border.bottom: border.top
+        border.bottom: sourceSize.height / 2
         horizontalTileMode: BorderImage.Stretch
         verticalTileMode: BorderImage.Stretch
     }

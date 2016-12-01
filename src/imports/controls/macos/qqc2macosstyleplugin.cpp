@@ -35,8 +35,9 @@
 ****************************************************************************/
 
 #include <QtQuickControls2/private/qquickstyleplugin_p.h>
-#include "qquickcontrols2nsview.h"
-#include "imageprovidernscontrol.h"
+
+#include "qqc2nscontrol.h"
+#include "qqc2nscontrolimageprovider.h"
 
 #ifdef INCLUDE_FPS
 #include "fps.h"
@@ -89,7 +90,7 @@ void QtQuickControls2macOSStylePlugin::registerTypes(const char *uri)
 {
     qmlRegisterUncreatableType<QQuickMacOSStyle>(uri, 2, 0, "MacOS", tr("MacOS is an attached property"));
     qmlRegisterRevision<QQuickMacOSStyle, 1>(uri, 2, 1);
-    qmlRegisterType<QQuickControls2NSControl>(uri, 2, 0, "NSControl");
+    qmlRegisterType<QQC2NSControl>(uri, 2, 0, "NSControl");
 
 #ifdef INCLUDE_FPS
     qmlRegisterType<FPS>(uri, 2, 0, "FPS");

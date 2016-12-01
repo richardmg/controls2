@@ -13,16 +13,16 @@ DEFINES += QT_NO_CAST_TO_ASCII QT_NO_CAST_FROM_ASCII
 DEFINES += INCLUDE_FPS
 
 SOURCES += \
-    $$PWD/qtquickcontrols2macosstyleplugin.cpp
+    $$PWD/qqc2macosstyleplugin.cpp
 
 HEADERS += \
-    qquickcontrols2nsview.h \
-    imageprovidernscontrol.h \
-    fps.h
+    fps.h \
+    qqc2nscontrolimageprovider.h \
+    qqc2nscontrol.h
 
 OBJECTIVE_SOURCES += \
-    qquickcontrols2nsview.mm \
-    imageprovidernscontrol.mm
+    qqc2nscontrolimageprovider.mm \
+    qqc2nscontrol.mm
 
 RESOURCES += \
     $$PWD/qtquickcontrols2macosstyleplugin.qrc

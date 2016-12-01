@@ -23,7 +23,7 @@ OBJECTIVE_SOURCES += \
     qqc2nscontrol.mm
 
 RESOURCES += \
-    $$PWD/qtquickcontrols2macosstyleplugin.qrc
+    qqc2macosstyleplugin.qrc
 
 OTHER_FILES += \
     qmldir

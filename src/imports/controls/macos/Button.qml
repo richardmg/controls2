@@ -57,6 +57,7 @@ T.Button {
     contentItem: Item {
         implicitWidth: text.implicitWidth
         implicitHeight: text.implicitHeight
+
         Text {
             id: text
             x: nsControl.contentRect.x
@@ -68,20 +69,16 @@ T.Button {
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-
-            //enabled: false
-            //visible: false
-
             opacity: enabled ? 1.0 : 0.2
             color: "red"
-            //onImplicitWidthChanged: print("impl text width:", implicitWidth)
-            //onImplicitHeightChanged: print("impl text height:", implicitHeight)
         }
     }
 
     background: BorderImage {
         //source: "/Users/richard/tmp/ButtonSnap.png"
         source: nsControl.url
+        width: parent.width
+        height: parent.height
         border.left: 10
         border.right: 10
         border.top: 10
@@ -95,6 +92,5 @@ T.Button {
         type: NSControl.Button
         pressed: control.pressed
         text: text
-        onImplicitSizeChanged: print("implicit size:", implicitWidth, implicitHeight)
     }
 }

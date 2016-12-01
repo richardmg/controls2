@@ -183,7 +183,7 @@ void QQuickControls2NSControl::updateUrl()
 {
     QString urlString = QStringLiteral("image://nscontrol/")
             + QString::number(int(m_type))
-            + QStringLiteral(",")
+            + QStringLiteral("_")
             + QString::number(int(m_pressed));
 
     QUrl url(urlString);

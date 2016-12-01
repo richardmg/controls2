@@ -76,14 +76,13 @@ T.Button {
     }
 
     background: BorderImage {
-        //source: "/Users/richard/tmp/ButtonSnap.png"
         source: nsControl.url
         width: parent.width
         height: parent.height
-        border.left: 10
-        border.right: 10
-        border.top: 10
-        border.bottom: 10
+        border.left: sourceSize.width / 2
+        border.right: border.left
+        border.top: sourceSize.height / 2
+        border.bottom: border.top
         horizontalTileMode: BorderImage.Stretch
         verticalTileMode: BorderImage.Stretch
     }

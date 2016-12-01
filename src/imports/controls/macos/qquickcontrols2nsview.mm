@@ -51,6 +51,7 @@ NSComboBox *QQuickControls2NSControl::s_nsComboBox = 0;
 QQuickControls2NSControl::QQuickControls2NSControl(QQuickItem *parent)
     : QObject(parent)
     , m_type(Button)
+    , m_bezelStyle(RoundedBezelStyle)
     , m_pressed(false)
     , m_contentRect(QRectF())
     , m_implicitSize(QSize())
@@ -75,6 +76,20 @@ void QQuickControls2NSControl::setType(QQuickControls2NSControl::Type type)
         return;
 
    m_type = type;
+   update();
+}
+
+QQuickControls2NSControl::BezelStyle QQuickControls2NSControl::bezelStyle() const
+{
+    return m_bezelStyle;
+}
+
+void QQuickControls2NSControl::setBezelStyle(QQuickControls2NSControl::BezelStyle bezelStyle)
+{
+    if (m_bezelStyle == bezelStyle)
+        return;
+
+   m_bezelStyle = bezelStyle;
    update();
 }
 

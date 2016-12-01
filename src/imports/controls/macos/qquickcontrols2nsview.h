@@ -63,6 +63,7 @@ class QQuickControls2NSControl : public QObject, public QQmlParserStatus
     Q_OBJECT
     Q_PROPERTY(bool pressed READ pressed WRITE setPressed FINAL)
     Q_PROPERTY(Type type READ type WRITE setType FINAL)
+    Q_PROPERTY(BezelStyle bezelStyle READ bezelStyle WRITE setBezelStyle FINAL)
     Q_PROPERTY(QRectF contentRect READ contentRect NOTIFY contentRectChanged FINAL)
     Q_PROPERTY(QSizeF implicitSize READ implicitSize NOTIFY implicitSizeChanged FINAL)
     Q_PROPERTY(QQuickText *text READ text WRITE setText FINAL)
@@ -77,6 +78,12 @@ public:
         ComboBox,
     };
 
+    enum BezelStyle {
+        RoundedBezelStyle,
+        RegularBezelStyle,
+        TexturedSquareBezelStyle
+    };
+
     Q_ENUM(Type)
 
     explicit QQuickControls2NSControl(QQuickItem *parent = nullptr);
@@ -85,13 +92,17 @@ public:
     Type type() const;
     void setType(Type type);
 
+    BezelStyle bezelStyle() const;
+    void setBezelStyle(BezelStyle bezelStyle);
+
     bool pressed() const;
     void setPressed(bool pressed);
-    QRectF contentRect() const;
-    QSizeF implicitSize() const;
-    bool snapshotFailed() const;
+
     QQuickText *text() const;
     void setText(QQuickText *text);
+
+    QRectF contentRect() const;
+    QSizeF implicitSize() const;
     QUrl url() const;
 
     QPixmap takeSnapshot();
@@ -108,6 +119,7 @@ Q_SIGNALS:
 
 private:
     Type m_type;
+    BezelStyle m_bezelStyle;
     bool m_pressed;
     QRectF m_contentRect;
     QSizeF m_implicitSize;

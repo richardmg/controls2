@@ -84,8 +84,8 @@ T.Button {
     NSControl {
         id: nsControl
         type: NSControl.Button
-        preferredWidth: parent.width
-        preferredHeight: parent.height
+        preferredWidth: control.width
+        preferredHeight: control.height
         pressed: control.pressed
         bezelStyle: NSControl.RoundedBezelStyle
         text: text

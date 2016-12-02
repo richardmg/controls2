@@ -333,9 +333,7 @@ void QQC2NSControl::updateButton()
     updateImplicitSize(bounds.size);
     if (m_preferredSize.width() >= 0)
         bounds.size.width = m_preferredSize.width();
-    qDebug() << "size before:" << m_size;
     updateSize(bounds.size);
-    qDebug() << "size after:" << m_size;
     updateContentRect(bounds, QMargins(0, 0, 0, 0));
 }
 

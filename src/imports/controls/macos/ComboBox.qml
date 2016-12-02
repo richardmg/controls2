@@ -95,7 +95,7 @@ T.ComboBox {
         type: NSControl.ComboBox
         pressed: control.pressed
         bezelStyle: NSControl.RoundedBezelStyle
-        preferredWidth: parent.width
-        preferredHeight: parent.height
+        preferredWidth: control.width
+        preferredHeight: control.height
     }
 }

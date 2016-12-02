@@ -98,8 +98,8 @@ T.ComboBox {
         pressed: control.pressed
         bezelStyle: NSControl.RoundedBezelStyle
         text: Text { text: "Click combo" }
-//        preferredWidth: parent.width
-//        preferredHeight: parent.height
+        preferredWidth: parent.width
+        preferredHeight: parent.height
         // you set preferredWidth, and read back controlWidth, contentWidth and implicitWidth
     }
 }

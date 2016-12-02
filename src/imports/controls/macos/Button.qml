@@ -53,24 +53,19 @@ T.Button {
 
 //    font: foo.font
 
-    contentItem: Item {
-        width: parent.width
-        height: parent.height
-
-        Text {
-            id: text
-            x: nsControl.contentRect.x
-            y: nsControl.contentRect.y
-            width: nsControl.contentRect.width
-            height: nsControl.contentRect.height
-            text: control.text
-            font: control.font
-            elide: Text.ElideRight
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            opacity: enabled ? 1.0 : 0.2
-            color: "black"
-        }
+    contentItem: Text {
+        id: text
+        x: nsControl.contentRect.x
+        y: nsControl.contentRect.y
+        width: nsControl.contentRect.width
+        height: nsControl.contentRect.height
+        text: control.text
+        font: control.font
+        elide: Text.ElideRight
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        opacity: enabled ? 1.0 : 0.2
+        color: "black"
     }
 
     background: BorderImage {

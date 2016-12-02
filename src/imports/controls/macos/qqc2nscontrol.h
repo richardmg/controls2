@@ -141,7 +141,7 @@ private:
     bool m_componentComplete;
 
     void updateContentRect(const CGRect &cgRect, const QMargins &margins = QMargins());
-    void updateContentRect(const QRectF &rect);
+    void updateContentRect(const QRectF &rect, const QMargins &margins = QMargins());
     void updateImplicitSize(const CGSize &implicitSize);
     void updateImplicitSize(const QSizeF &implicitSize);
     void updateSize(const CGSize &size);

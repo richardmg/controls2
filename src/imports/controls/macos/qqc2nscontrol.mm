@@ -228,15 +228,17 @@ QString QQC2NSControl::toStringID()
 
 void QQC2NSControl::updateContentRect(const CGRect &cgRect, const QMargins &margins)
 {
-    updateContentRect(QRectF::fromCGRect(cgRect).adjusted(margins.left(), margins.top(), margins.right(), margins.bottom()));
+    updateContentRect(QRectF::fromCGRect(cgRect), margins);
 }
 
-void QQC2NSControl::updateContentRect(const QRectF &rect)
+void QQC2NSControl::updateContentRect(const QRectF &rect, const QMargins &margins)
 {
-    if (rect == m_contentRect)
+    QRectF rectWithMargins = rect.adjusted(margins.left(), margins.top(), margins.right(), margins.bottom());
+
+    if (rectWithMargins == m_contentRect)
         return;
 
-    m_contentRect = rect;
+    m_contentRect = rectWithMargins;
     emit contentRectChanged();
 }
 
@@ -349,15 +351,13 @@ void QQC2NSControl::updateComboBox()
     }
     m_control = s_nsComboBox;
 
-    //updateFont();
-    //s_nsComboBox.title = m_text ? m_text->text().toNSString() : @"";
-    //s_nsComboBox.highlighted = m_pressed;
+    s_nsComboBox.highlighted = m_pressed;
 
     CGRect bounds = m_control.bounds;
     updateImplicitSize(bounds.size);
     bounds.size.width = qMax(bounds.size.width, m_preferredSize.width());
     updateSize(bounds.size);
-    updateContentRect(QRectF(QPointF(), m_size));
+    updateContentRect(bounds, QMargins(0, 0, -30, 0));
 }
 
 #include "moc_qqc2nscontrol.cpp"

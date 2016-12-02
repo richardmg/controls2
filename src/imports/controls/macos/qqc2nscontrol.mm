@@ -58,7 +58,7 @@ QQC2NSControl::QQC2NSControl(QQuickItem *parent)
     , m_size(QSizeF())
     , m_implicitSize(QSize())
     , m_contentRect(QRectF())
-    , m_preferredSize(QSizeF())
+    , m_preferredSize(QSizeF(-1, -1))
     , m_text(nullptr)
     , m_url(QUrl())
     , m_control(nullptr)
@@ -325,7 +325,8 @@ void QQC2NSControl::updateButton()
     [m_control sizeToFit];
     CGRect bounds = m_control.bounds;
     updateImplicitSize(bounds.size);
-    bounds.size.width = qMax(bounds.size.width, m_preferredSize.width());
+    if (m_preferredSize.width() >= 0)
+        bounds.size.width = m_preferredSize.width();
     updateSize(bounds.size);
     updateContentRect(bounds, QMargins(0, 0, 0, 0));
 }

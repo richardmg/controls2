@@ -41,7 +41,7 @@ import QtQuick.Controls.macOS 2.1
 T.ComboBox {
     id: control
 
-    implicitWidth: nsControl.implicitSize.width
+    implicitWidth: nsControl.implicitSize.width // implicitSize does not depend on preferredSize
     implicitHeight: nsControl.implicitSize.height
 
 //    Text {
@@ -55,23 +55,21 @@ T.ComboBox {
 
     contentItem: Item {
         T.TextField {
+            x: nsControl.contentRect.x
+            y: nsControl.contentRect.y
+            width: nsControl.contentRect.width
+            height: nsControl.contentRect.height
+
             leftPadding: control.mirrored ? 1 : 12
             rightPadding: control.mirrored ? 10 : 1
             topPadding: 5 - control.topPadding
             bottomPadding: 7 - control.bottomPadding
-
-            width: 50//nsControl.contentRect.width
-            onWidthChanged: print("new width:", width, nsControl.contentRect.width)
-            height: nsControl.contentRect.height
-
             text: control.editable ? control.editText : control.displayText
-
             //enabled: control.editable
             //autoScroll: control.editable
             //readOnly: control.popup.visible
             //inputMethodHints: control.inputMethodHints
             //validator: control.validator
-
             font: control.font
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
@@ -81,8 +79,8 @@ T.ComboBox {
     background: Item {
         BorderImage {
             source: nsControl.url
-            width: nsControl.implicitSize.width
-            height: nsControl.implicitSize.height
+            width: nsControl.exactSize.width
+            height: nsControl.exactSize.height
             border.left: sourceSize.width / 2
             border.right: sourceSize.width / 2
             border.top: sourceSize.height / 2
@@ -100,6 +98,5 @@ T.ComboBox {
         bezelStyle: NSControl.RoundedBezelStyle
         preferredWidth: parent.width
         preferredHeight: parent.height
-        // you set preferredWidth, and read back controlWidth, contentWidth and implicitWidth
     }
 }

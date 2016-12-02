@@ -34,60 +34,36 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.8
-import QtQuick.Templates 2.1 as T
-import QtQuick.Controls.macOS 2.1
+#ifndef IMAGEPROVIDERNSCONTROL_H
+#define IMAGEPROVIDERNSCONTROL_H
 
-T.Button {
-    id: control
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Qt API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
 
-    implicitWidth: nsControl.implicitSize.width
-    implicitHeight: nsControl.implicitSize.height
+#include <QtGui/qpixmap.h>
+#include <QtQuick/qquickitem.h>
+#include <QtQuick/private/qquicktext_p.h>
+#include <QtQuick/qquickimageprovider.h>
 
-//    Text {
-//       id: foo
-//       font.family: "verdana"
-//       font.pointSize: 30
-//       visible: false
-//    }
+QT_BEGIN_NAMESPACE
 
-//    font: foo.font
+class ImageProviderNSControl : public QQuickImageProvider
+{
+public:
+    ImageProviderNSControl();
+    ~ImageProviderNSControl();
 
-    contentItem: Text {
-        id: text
-        x: nsControl.contentRect.x
-        y: nsControl.contentRect.y
-        width: nsControl.contentRect.width
-        height: nsControl.contentRect.height
+    QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize);
+};
 
-        text: control.text
-        font: control.font
-        elide: Text.ElideRight
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        opacity: enabled ? 1.0 : 0.2
-        color: "black"
-    }
+QT_END_NAMESPACE
 
-    background: BorderImage {
-        source: nsControl.url
-        width: nsControl.exactSize.width
-        height: nsControl.exactSize.height
-        border.left: sourceSize.width / 2
-        border.right: sourceSize.width / 2
-        border.top: sourceSize.height / 2
-        border.bottom: sourceSize.height / 2
-        horizontalTileMode: BorderImage.Stretch
-        verticalTileMode: BorderImage.Stretch
-    }
-
-    NSControl {
-        id: nsControl
-        type: NSControl.Button
-        preferredWidth: parent.width
-        preferredHeight: parent.height
-        pressed: control.pressed
-        bezelStyle: NSControl.RoundedBezelStyle
-        text: text
-    }
-}
+#endif // IMAGEPROVIDERNSCONTROL_H

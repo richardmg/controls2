@@ -34,60 +34,30 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.8
-import QtQuick.Templates 2.1 as T
-import QtQuick.Controls.macOS 2.1
+#include "qqc2nscontrolimageprovider.h"
+#include "qqc2nscontrol.h"
 
-T.Button {
-    id: control
+QT_BEGIN_NAMESPACE
 
-    implicitWidth: nsControl.implicitSize.width
-    implicitHeight: nsControl.implicitSize.height
-
-//    Text {
-//       id: foo
-//       font.family: "verdana"
-//       font.pointSize: 30
-//       visible: false
-//    }
-
-//    font: foo.font
-
-    contentItem: Text {
-        id: text
-        x: nsControl.contentRect.x
-        y: nsControl.contentRect.y
-        width: nsControl.contentRect.width
-        height: nsControl.contentRect.height
-
-        text: control.text
-        font: control.font
-        elide: Text.ElideRight
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        opacity: enabled ? 1.0 : 0.2
-        color: "black"
-    }
-
-    background: BorderImage {
-        source: nsControl.url
-        width: nsControl.exactSize.width
-        height: nsControl.exactSize.height
-        border.left: sourceSize.width / 2
-        border.right: sourceSize.width / 2
-        border.top: sourceSize.height / 2
-        border.bottom: sourceSize.height / 2
-        horizontalTileMode: BorderImage.Stretch
-        verticalTileMode: BorderImage.Stretch
-    }
-
-    NSControl {
-        id: nsControl
-        type: NSControl.Button
-        preferredWidth: parent.width
-        preferredHeight: parent.height
-        pressed: control.pressed
-        bezelStyle: NSControl.RoundedBezelStyle
-        text: text
-    }
+ImageProviderNSControl::ImageProviderNSControl()
+    : QQuickImageProvider(QQuickImageProvider::Pixmap)
+{
 }
+
+ImageProviderNSControl::~ImageProviderNSControl()
+{
+}
+
+QPixmap ImageProviderNSControl::requestPixmap(const QString &id, QSize *size, const QSize &)
+{
+    QQC2NSControl control;
+    control.configureFromStringID(id);
+    QPixmap snapShot = control.takeSnapshot();
+
+    if (size)
+        *size = snapShot.size();
+
+    return snapShot;
+}
+
+QT_END_NAMESPACE

@@ -41,8 +41,8 @@ import QtQuick.Controls.macOS 2.1
 T.Button {
     id: control
 
-    implicitWidth: nsControl.implicitSize.width
-    implicitHeight: nsControl.implicitSize.height
+    implicitWidth: nsControl.width
+    implicitHeight: nsControl.height
 
 //    Text {
 //       id: foo
@@ -70,8 +70,8 @@ T.Button {
 
     background: BorderImage {
         source: nsControl.url
-        width: parent.width
-        height: nsControl.implicitSize.height
+        width: nsControl.width
+        height: nsControl.height
         border.left: sourceSize.width / 2
         border.right: sourceSize.width / 2
         border.top: sourceSize.height / 2
@@ -83,10 +83,10 @@ T.Button {
     NSControl {
         id: nsControl
         type: NSControl.Button
+        preferredWidth: parent.width
+        preferredHeight: parent.height
         pressed: control.pressed
         bezelStyle: NSControl.RoundedBezelStyle
         text: text
-        preferredWidth: parent.width
-        preferredHeight: parent.height
     }
 }

@@ -53,35 +53,43 @@ T.ComboBox {
 
 //    font: foo.font
 
-    contentItem: T.TextField {
-        leftPadding: control.mirrored ? 1 : 12
-        rightPadding: control.mirrored ? 10 : 1
-        topPadding: 5 - control.topPadding
-        bottomPadding: 7 - control.bottomPadding
+    contentItem: Item {
+        T.TextField {
+            leftPadding: control.mirrored ? 1 : 12
+            rightPadding: control.mirrored ? 10 : 1
+            topPadding: 5 - control.topPadding
+            bottomPadding: 7 - control.bottomPadding
 
-        text: control.editable ? control.editText : control.displayText
+            width: 50//nsControl.contentRect.width
+            onWidthChanged: print("new width:", width, nsControl.contentRect.width)
+            height: nsControl.contentRect.height
 
-        //enabled: control.editable
-        //autoScroll: control.editable
-        //readOnly: control.popup.visible
-        //inputMethodHints: control.inputMethodHints
-        //validator: control.validator
+            text: control.editable ? control.editText : control.displayText
 
-        font: control.font
-        horizontalAlignment: Text.AlignLeft
-        verticalAlignment: Text.AlignVCenter
+            //enabled: control.editable
+            //autoScroll: control.editable
+            //readOnly: control.popup.visible
+            //inputMethodHints: control.inputMethodHints
+            //validator: control.validator
+
+            font: control.font
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+        }
     }
 
-    background: BorderImage {
-        source: nsControl.url
-        width: parent.width
-        height: parent.height
-        border.left: sourceSize.width / 2
-        border.right: sourceSize.width / 2
-        border.top: sourceSize.height / 2
-        border.bottom: sourceSize.height / 2
-        horizontalTileMode: BorderImage.Stretch
-        verticalTileMode: BorderImage.Stretch
+    background: Item {
+        BorderImage {
+            source: nsControl.url
+            width: nsControl.width
+            height: nsControl.height
+            border.left: sourceSize.width / 2
+            border.right: sourceSize.width / 2
+            border.top: sourceSize.height / 2
+            border.bottom: sourceSize.height / 2
+            horizontalTileMode: BorderImage.Stretch
+            verticalTileMode: BorderImage.Stretch
+        }
     }
 
     NSControl {
@@ -89,6 +97,9 @@ T.ComboBox {
         type: NSControl.ComboBox
         pressed: control.pressed
         bezelStyle: NSControl.RoundedBezelStyle
-        //text: text
+        text: Text { text: "Click combo" }
+//        preferredWidth: parent.width
+//        preferredHeight: parent.height
+        // you set preferredWidth, and read back controlWidth, contentWidth and implicitWidth
     }
 }

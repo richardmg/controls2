@@ -47,6 +47,7 @@
 QT_BEGIN_NAMESPACE
 
 NSButton *QQC2NSControl::s_nsButton = 0;
+NSButton *QQC2NSControl::s_nsCheckBox = 0;
 NSComboBox *QQC2NSControl::s_nsComboBox = 0;
 
 static const QChar separator(QLatin1Char(','));
@@ -302,8 +303,10 @@ void QQC2NSControl::update()
 
     switch(m_type) {
     case Button:
-    case CheckBox:
         updateButton();
+        break;
+    case CheckBox:
+        updateCheckBox();
         break;
     case ComboBox:
         updateComboBox();
@@ -321,21 +324,30 @@ void QQC2NSControl::updateButton()
         s_nsButton = [[NSButton alloc] initWithFrame:NSZeroRect];
     m_control = s_nsButton;
 
-    switch(m_type) {
-    case Button:
-        s_nsButton.buttonType = NSMomentaryPushInButton;
-        break;
-    case CheckBox:
-        s_nsButton.buttonType = NSSwitchButton;
-        break;
-    default:
-        break;
-    }
-
+    s_nsButton.buttonType = NSMomentaryPushInButton;
     updateFont();
     s_nsButton.title = m_text ? m_text->text().toNSString() : @"";
     s_nsButton.highlighted = m_pressed;
     s_nsButton.bezelStyle = NSBezelStyle(m_bezelStyle);
+
+    [m_control sizeToFit];
+    CGRect bounds = m_control.bounds;
+    updateImplicitSize(bounds.size);
+    if (m_preferredSize.width() >= 0)
+        bounds.size.width = m_preferredSize.width();
+    updateSize(bounds.size);
+    updateContentRect(bounds, QMargins(0, 0, 0, 0));
+}
+
+void QQC2NSControl::updateCheckBox()
+{
+    if (!s_nsCheckBox)
+        s_nsCheckBox = [[NSButton alloc] initWithFrame:NSZeroRect];
+    m_control = s_nsCheckBox;
+
+    s_nsCheckBox.buttonType = NSSwitchButton;
+    s_nsCheckBox.highlighted = m_pressed;
+    s_nsCheckBox.bezelStyle = NSBezelStyle(m_bezelStyle);
 
     [m_control sizeToFit];
     CGRect bounds = m_control.bounds;

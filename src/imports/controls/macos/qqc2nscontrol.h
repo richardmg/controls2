@@ -153,9 +153,11 @@ private:
 
     void update();
     void updateButton();
+    void updateCheckBox();
     void updateComboBox();
 
     static NSButton *s_nsButton;
+    static NSButton *s_nsCheckBox;
     static NSComboBox *s_nsComboBox;
 };
 

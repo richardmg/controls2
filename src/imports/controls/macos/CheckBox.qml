@@ -41,7 +41,7 @@ import QtQuick.Controls.macOS 2.1
 T.CheckBox {
     id: control
 
-    implicitWidth: nsControl.implicitSize.width
+    implicitWidth: nsControl.implicitSize.width + text.implicitWidth
     implicitHeight: nsControl.implicitSize.height
 
 //    Text {
@@ -53,39 +53,41 @@ T.CheckBox {
 
 //    font: foo.font
 
-    contentItem: Text {
-        id: text
-        x: nsControl.contentRect.x
-        y: nsControl.contentRect.y
-        width: nsControl.contentRect.width
-        height: nsControl.contentRect.height
+    contentItem: Item {
+        anchors.fill: parent
+        Text {
+            id: text
+            x: nsControl.contentRect.x
+            y: nsControl.contentRect.y
+            height: nsControl.contentRect.height
 
-        text: control.text
-        font: control.font
-        elide: Text.ElideRight
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        opacity: enabled ? 1.0 : 0.2
-        color: "black"
+            text: control.text
+            font: control.font
+            elide: Text.ElideRight
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            opacity: enabled ? 1.0 : 0.2
+            color: "black"
+        }
     }
 
-    background: BorderImage {
-        source: nsControl.url
-        width: nsControl.size.width
-        height: nsControl.size.height
-        border.left: sourceSize.width / 2
-        border.right: sourceSize.width / 2
-        border.top: sourceSize.height / 2
-        border.bottom: sourceSize.height / 2
-        horizontalTileMode: BorderImage.Stretch
-        verticalTileMode: BorderImage.Stretch
+    background: Item {
+        BorderImage {
+            source: nsControl.url
+            width: nsControl.size.width
+            height: nsControl.size.height
+            border.left: sourceSize.width / 2
+            border.right: sourceSize.width / 2
+            border.top: sourceSize.height / 2
+            border.bottom: sourceSize.height / 2
+            horizontalTileMode: BorderImage.Stretch
+            verticalTileMode: BorderImage.Stretch
+        }
     }
 
     NSControl {
         id: nsControl
         type: NSControl.CheckBox
-        preferredWidth: control.width
-        preferredHeight: control.height
         pressed: control.pressed
         bezelStyle: NSControl.RoundedBezelStyle
         text: text

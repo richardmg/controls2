@@ -46,6 +46,8 @@
 
 QT_BEGIN_NAMESPACE
 
+static const int kNoSizeLimit = 0;
+
 NSButton *QQC2NSControl::s_nsButton = 0;
 NSButton *QQC2NSControl::s_nsCheckBox = 0;
 NSComboBox *QQC2NSControl::s_nsComboBox = 0;
@@ -346,16 +348,15 @@ void QQC2NSControl::updateCheckBox()
     m_control = s_nsCheckBox;
 
     s_nsCheckBox.buttonType = NSSwitchButton;
+    s_nsCheckBox.title = @"";
     s_nsCheckBox.highlighted = m_pressed;
     s_nsCheckBox.bezelStyle = NSBezelStyle(m_bezelStyle);
 
     [m_control sizeToFit];
     CGRect bounds = m_control.bounds;
     updateImplicitSize(bounds.size);
-    if (m_preferredSize.width() >= 0)
-        bounds.size.width = m_preferredSize.width();
     updateSize(bounds.size);
-    updateContentRect(bounds, QMargins(0, 0, 0, 0));
+    updateContentRect(QRectF(bounds.size.width, 0, kNoSizeLimit, bounds.size.height));
 }
 
 void QQC2NSControl::updateComboBox()

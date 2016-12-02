@@ -89,7 +89,7 @@ public:
     Q_ENUM(BezelStyle)
 
     explicit QQC2NSControl(QQuickItem *parent = nullptr);
-    explicit QQC2NSControl(const QString &id);
+    explicit QQC2NSControl(const QString &stringId);
     ~QQC2NSControl();
 
     Type type() const;
@@ -116,7 +116,6 @@ public:
     QUrl url() const;
 
     QPixmap takeSnapshot();
-    QString toStringID();
 
     virtual void classBegin() override {};
     virtual void componentComplete() override;
@@ -139,6 +138,9 @@ private:
     QUrl m_url;
     NSControl *m_control;
     bool m_componentComplete;
+
+    QString toStringID();
+    void fromStringID(const QString &stringId);
 
     void updateContentRect(const CGRect &cgRect, const QMargins &margins = QMargins());
     void updateContentRect(const QRectF &rect, const QMargins &margins = QMargins());

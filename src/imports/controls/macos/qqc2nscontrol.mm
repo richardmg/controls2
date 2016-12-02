@@ -67,16 +67,10 @@ QQC2NSControl::QQC2NSControl(QQuickItem *parent)
 {
 }
 
-QQC2NSControl::QQC2NSControl(const QString &id)
+QQC2NSControl::QQC2NSControl(const QString &stringId)
     : QQC2NSControl(0)
 {
-    int i = 0;
-    QStringList args = id.split(separator);
-
-    m_type = Type(args[i++].toInt());
-    m_pressed = bool(args[i++].toInt());
-    m_bezelStyle = BezelStyle(args[i++].toInt());
-
+    fromStringID(stringId);
     m_componentComplete = true;
     update();
 }
@@ -95,6 +89,23 @@ void QQC2NSControl::componentComplete()
         m_componentComplete = true;
         update();
     });
+}
+
+QString QQC2NSControl::toStringID()
+{
+    return QString::number(int(m_type))
+            + separator + QString::number(int(m_pressed))
+            + separator + QString::number(m_bezelStyle);
+}
+
+void QQC2NSControl::fromStringID(const QString &stringId)
+{
+    int i = 0;
+    QStringList args = stringId.split(separator);
+
+    m_type = Type(args[i++].toInt());
+    m_pressed = bool(args[i++].toInt());
+    m_bezelStyle = BezelStyle(args[i++].toInt());
 }
 
 QQC2NSControl::Type QQC2NSControl::type() const
@@ -219,13 +230,6 @@ QPixmap QQC2NSControl::takeSnapshot()
     return pixmap;
 }
 
-QString QQC2NSControl::toStringID()
-{
-    return QString::number(int(m_type))
-            + separator + QString::number(int(m_pressed))
-            + separator + QString::number(m_bezelStyle);
-}
-
 void QQC2NSControl::updateContentRect(const CGRect &cgRect, const QMargins &margins)
 {
     updateContentRect(QRectF::fromCGRect(cgRect), margins);
@@ -318,6 +322,9 @@ void QQC2NSControl::updateButton()
     m_control = s_nsButton;
 
     switch(m_type) {
+    case Button:
+        s_nsButton.buttonType = NSMomentaryPushInButton;
+        break;
     case CheckBox:
         s_nsButton.buttonType = NSSwitchButton;
         break;

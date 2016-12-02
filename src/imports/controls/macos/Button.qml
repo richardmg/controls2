@@ -54,8 +54,8 @@ T.Button {
 //    font: foo.font
 
     contentItem: Item {
-        implicitWidth: text.implicitWidth
-        implicitHeight: text.implicitHeight
+        width: parent.width
+        height: parent.height
 
         Text {
             id: text
@@ -76,7 +76,7 @@ T.Button {
     background: BorderImage {
         source: nsControl.url
         width: parent.width
-        height: parent.height
+        height: nsControl.implicitSize.height
         border.left: sourceSize.width / 2
         border.right: sourceSize.width / 2
         border.top: sourceSize.height / 2
@@ -91,5 +91,7 @@ T.Button {
         pressed: control.pressed
         bezelStyle: NSControl.RoundedBezelStyle
         text: text
+        preferredWidth: parent.width
+        preferredHeight: parent.height
     }
 }

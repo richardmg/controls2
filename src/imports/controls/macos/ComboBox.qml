@@ -81,14 +81,15 @@ T.ComboBox {
     background: Item {
         BorderImage {
             source: nsControl.url
-            width: nsControl.width
-            height: nsControl.height
+            width: nsControl.implicitSize.width
+            height: nsControl.implicitSize.height
             border.left: sourceSize.width / 2
             border.right: sourceSize.width / 2
             border.top: sourceSize.height / 2
             border.bottom: sourceSize.height / 2
             horizontalTileMode: BorderImage.Stretch
             verticalTileMode: BorderImage.Stretch
+            onWidthChanged: print("width:", width)
         }
     }
 
@@ -97,7 +98,6 @@ T.ComboBox {
         type: NSControl.ComboBox
         pressed: control.pressed
         bezelStyle: NSControl.RoundedBezelStyle
-        text: Text { text: "Click combo" }
         preferredWidth: parent.width
         preferredHeight: parent.height
         // you set preferredWidth, and read back controlWidth, contentWidth and implicitWidth

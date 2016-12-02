@@ -40,6 +40,7 @@
 #include <QtGui/qpainter.h>
 
 #include <QtGui/private/qcoregraphics_p.h>
+#include <QtQml/private/qqmlcomponentattached_p.h>
 
 #include "qqc2nscontrol.h"
 
@@ -66,8 +67,34 @@ QQC2NSControl::QQC2NSControl(QQuickItem *parent)
 {
 }
 
+QQC2NSControl::QQC2NSControl(const QString &id)
+    : QQC2NSControl(0)
+{
+    int i = 0;
+    QStringList args = id.split(separator);
+
+    m_type = Type(args[i++].toInt());
+    m_pressed = bool(args[i++].toInt());
+    m_bezelStyle = BezelStyle(args[i++].toInt());
+
+    m_componentComplete = true;
+    update();
+}
+
 QQC2NSControl::~QQC2NSControl()
 {
+}
+
+void QQC2NSControl::componentComplete()
+{
+    // componentComplete is called when the object is ready to be populated. But
+    // we want to wait calling update until all the properies have been assigned.
+    // So henve we need this "work-around"
+    QQmlComponentAttached *att = qobject_cast<QQmlComponentAttached *>(qmlAttachedPropertiesObject<QQmlComponent>(this, true));
+    connect(att, &QQmlComponentAttached::completed, [=]() {
+        m_componentComplete = true;
+        update();
+    });
 }
 
 QQC2NSControl::Type QQC2NSControl::type() const
@@ -178,18 +205,10 @@ QUrl QQC2NSControl::url() const
     return m_url;
 }
 
-void QQC2NSControl::componentComplete()
-{
-    m_componentComplete = true;
-    update();
-}
-
 QPixmap QQC2NSControl::takeSnapshot()
 {
-    // m_control points to a shared control, so ensure
-    // we update it to mirror this instance before the snapshot
-    update();
-
+    // m_control points to a shared control, so ensure to call update
+    // first, or take takeSnapshot directly after construction.
     QPixmap pixmap(QSizeF::fromCGSize(m_control.bounds.size).toSize());
     pixmap.fill(Qt::transparent);
     QMacCGContext ctx(&pixmap);
@@ -205,19 +224,6 @@ QString QQC2NSControl::toStringID()
     return QString::number(int(m_type))
             + separator + QString::number(int(m_pressed))
             + separator + QString::number(m_bezelStyle);
-}
-
-void QQC2NSControl::configureFromStringID(const QString &id)
-{
-    int i = 0;
-    QStringList args = id.split(separator);
-
-    m_type = Type(args[i++].toInt());
-    m_pressed = bool(args[i++].toInt());
-    m_bezelStyle = BezelStyle(args[i++].toInt());
-
-    m_componentComplete = true;
-    update();
 }
 
 void QQC2NSControl::updateContentRect(const CGRect &cgRect, const QMargins &margins)
@@ -327,7 +333,9 @@ void QQC2NSControl::updateButton()
     updateImplicitSize(bounds.size);
     if (m_preferredSize.width() >= 0)
         bounds.size.width = m_preferredSize.width();
+    qDebug() << "size before:" << m_size;
     updateSize(bounds.size);
+    qDebug() << "size after:" << m_size;
     updateContentRect(bounds, QMargins(0, 0, 0, 0));
 }
 

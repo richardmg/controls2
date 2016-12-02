@@ -89,6 +89,7 @@ public:
     Q_ENUM(BezelStyle)
 
     explicit QQC2NSControl(QQuickItem *parent = nullptr);
+    explicit QQC2NSControl(const QString &id);
     ~QQC2NSControl();
 
     Type type() const;
@@ -116,7 +117,6 @@ public:
 
     QPixmap takeSnapshot();
     QString toStringID();
-    void configureFromStringID(const QString &id);
 
     virtual void classBegin() override {};
     virtual void componentComplete() override;

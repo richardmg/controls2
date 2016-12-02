@@ -79,15 +79,14 @@ T.ComboBox {
     background: Item {
         BorderImage {
             source: nsControl.url
-            width: nsControl.exactSize.width
-            height: nsControl.exactSize.height
+            width: nsControl.size.width
+            height: nsControl.size.height
             border.left: sourceSize.width / 2
             border.right: sourceSize.width / 2
             border.top: sourceSize.height / 2
             border.bottom: sourceSize.height / 2
             horizontalTileMode: BorderImage.Stretch
             verticalTileMode: BorderImage.Stretch
-            onWidthChanged: print("width:", width)
         }
     }
 

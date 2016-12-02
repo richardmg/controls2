@@ -62,11 +62,11 @@ class QQC2NSControl : public QObject, public QQmlParserStatus
     Q_PROPERTY(bool pressed READ pressed WRITE setPressed FINAL)
     Q_PROPERTY(Type type READ type WRITE setType FINAL)
     Q_PROPERTY(BezelStyle bezelStyle READ bezelStyle WRITE setBezelStyle FINAL)
+    Q_PROPERTY(QSizeF size READ size NOTIFY sizeChanged FINAL)
+    Q_PROPERTY(QSizeF implicitSize READ implicitSize NOTIFY implicitSizeChanged FINAL)
     Q_PROPERTY(QRectF contentRect READ contentRect NOTIFY contentRectChanged FINAL)
     Q_PROPERTY(qreal preferredWidth READ preferredWidth WRITE setPreferredWidth FINAL)
     Q_PROPERTY(qreal preferredHeight READ preferredHeight WRITE setPreferredHeight FINAL)
-    Q_PROPERTY(qreal width READ width NOTIFY widthChanged FINAL)
-    Q_PROPERTY(qreal height READ height NOTIFY heightChanged FINAL)
     Q_PROPERTY(QQuickText *text READ text WRITE setText FINAL)
     Q_PROPERTY(QUrl url READ url NOTIFY urlChanged FINAL)
 
@@ -109,8 +109,8 @@ public:
     void setPreferredHeight(qreal preferredHeight);
     qreal preferredHeight() const;
 
-    qreal width() const;
-    qreal height() const;
+    QSizeF size() const;
+    QSizeF implicitSize() const;
     QRectF contentRect() const;
     QUrl url() const;
 
@@ -122,20 +122,19 @@ public:
     virtual void componentComplete() override;
 
 Q_SIGNALS:
+    void sizeChanged();
+    void implicitSizeChanged();
     void contentRectChanged();
-    void widthChanged();
-    void heightChanged();
     void urlChanged();
 
 private:
     Type m_type;
     BezelStyle m_bezelStyle;
     bool m_pressed;
+    QSizeF m_size;
+    QSizeF m_implicitSize;
     QRectF m_contentRect;
-    qreal m_width;
-    qreal m_height;
-    qreal m_preferredWidth;
-    qreal m_preferredHeight;
+    QSizeF m_preferredSize;
     QQuickText *m_text;
     QUrl m_url;
     NSControl *m_control;
@@ -143,8 +142,10 @@ private:
 
     void updateContentRect(const CGRect &cgRect, const QMargins &margins = QMargins());
     void updateContentRect(const QRectF &rect);
+    void updateImplicitSize(const CGSize &implicitSize);
+    void updateImplicitSize(const QSizeF &implicitSize);
     void updateSize(const CGSize &size);
-    void updateSize(qreal width, qreal height);
+    void updateSize(const QSizeF &size);
     void updateFont();
     void updateUrl();
 

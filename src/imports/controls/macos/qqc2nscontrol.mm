@@ -55,11 +55,10 @@ QQC2NSControl::QQC2NSControl(QQuickItem *parent)
     , m_type(Button)
     , m_bezelStyle(RoundedBezelStyle)
     , m_pressed(false)
+    , m_size(QSizeF())
+    , m_implicitSize(QSize())
     , m_contentRect(QRectF())
-    , m_width(0)
-    , m_height(0)
-    , m_preferredWidth(0)
-    , m_preferredHeight(0)
+    , m_preferredSize(QSizeF())
     , m_text(nullptr)
     , m_url(QUrl())
     , m_control(nullptr)
@@ -113,11 +112,6 @@ void QQC2NSControl::setPressed(bool pressed)
     update();
 }
 
-QRectF QQC2NSControl::contentRect() const
-{
-    return m_contentRect;
-}
-
 QQuickText *QQC2NSControl::text() const
 {
    return m_text;
@@ -136,42 +130,47 @@ void QQC2NSControl::setPreferredWidth(qreal preferredWidth)
 {
     // m_preferredWidth and m_preferredHeight are, together with
     // m_text, used to calculate implicitSize.
-    if (m_preferredWidth == preferredWidth)
+    if (m_preferredSize.width() == preferredWidth)
         return;
 
-   m_preferredWidth = preferredWidth;
+   m_preferredSize.setWidth(preferredWidth);
    update();
 }
 
 qreal QQC2NSControl::preferredWidth() const
 {
-    return m_preferredWidth;
+    return m_preferredSize.width();
 }
 
 void QQC2NSControl::setPreferredHeight(qreal preferredHeight)
 {
     // m_preferredWidth and m_preferredHeight are, together with
     // m_text, used to calculate implicitSize.
-    if (m_preferredHeight == preferredHeight)
+    if (m_preferredSize.height() == preferredHeight)
         return;
 
-   m_preferredHeight = preferredHeight;
+   m_preferredSize.setHeight(preferredHeight);
    update();
 }
 
 qreal QQC2NSControl::preferredHeight() const
 {
-    return m_preferredHeight;
+    return m_preferredSize.height();
 }
 
-qreal QQC2NSControl::width() const
+QSizeF QQC2NSControl::size() const
 {
-    return m_width;
+    return m_size;
 }
 
-qreal QQC2NSControl::height() const
+QSizeF QQC2NSControl::implicitSize() const
 {
-    return m_height;
+    return m_implicitSize;
+}
+
+QRectF QQC2NSControl::contentRect() const
+{
+    return m_contentRect;
 }
 
 QUrl QQC2NSControl::url() const
@@ -201,48 +200,6 @@ QPixmap QQC2NSControl::takeSnapshot()
     return pixmap;
 }
 
-void QQC2NSControl::updateContentRect(const CGRect &cgRect, const QMargins &margins)
-{
-    updateContentRect(QRectF::fromCGRect(cgRect).adjusted(margins.left(), margins.top(), margins.right(), margins.bottom()));
-}
-
-void QQC2NSControl::updateContentRect(const QRectF &rect)
-{
-    if (rect == m_contentRect)
-        return;
-
-    m_contentRect = rect;
-    emit contentRectChanged();
-}
-
-void QQC2NSControl::updateSize(const CGSize &size)
-{
-   updateSize(size.width, size.height);
-}
-
-void QQC2NSControl::updateSize(qreal width, qreal height)
-{
-    if (width != m_width) {
-        m_width = width;
-        emit widthChanged();
-    }
-
-    if (height != m_height) {
-        m_height = height;
-        emit heightChanged();
-    }
-}
-
-void QQC2NSControl::updateFont()
-{
-    if (!m_text)
-        return;
-
-    NSString *family = m_text->font().family().toNSString();
-    int pointSize = m_text->font().pointSize();
-    m_control.font = [NSFont fontWithName:family size:pointSize];
-}
-
 QString QQC2NSControl::toStringID()
 {
     return QString::number(int(m_type))
@@ -261,6 +218,58 @@ void QQC2NSControl::configureFromStringID(const QString &id)
 
     m_componentComplete = true;
     update();
+}
+
+void QQC2NSControl::updateContentRect(const CGRect &cgRect, const QMargins &margins)
+{
+    updateContentRect(QRectF::fromCGRect(cgRect).adjusted(margins.left(), margins.top(), margins.right(), margins.bottom()));
+}
+
+void QQC2NSControl::updateContentRect(const QRectF &rect)
+{
+    if (rect == m_contentRect)
+        return;
+
+    m_contentRect = rect;
+    emit contentRectChanged();
+}
+
+void QQC2NSControl::updateSize(const CGSize &size)
+{
+   updateSize(QSizeF::fromCGSize(size));
+}
+
+void QQC2NSControl::updateSize(const QSizeF &size)
+{
+    if (size == m_size)
+        return;
+
+    m_size = size;
+    emit sizeChanged();
+}
+
+void QQC2NSControl::updateImplicitSize(const CGSize &size)
+{
+   updateImplicitSize(QSizeF::fromCGSize(size));
+}
+
+void QQC2NSControl::updateImplicitSize(const QSizeF &implicitSize)
+{
+    if (implicitSize == m_implicitSize)
+        return;
+
+    m_implicitSize = implicitSize;
+    emit implicitSizeChanged();
+}
+
+void QQC2NSControl::updateFont()
+{
+    if (!m_text)
+        return;
+
+    NSString *family = m_text->font().family().toNSString();
+    int pointSize = m_text->font().pointSize();
+    m_control.font = [NSFont fontWithName:family size:pointSize];
 }
 
 void QQC2NSControl::updateUrl()
@@ -315,7 +324,8 @@ void QQC2NSControl::updateButton()
 
     [m_control sizeToFit];
     CGRect bounds = m_control.bounds;
-    bounds.size.width = qMax(bounds.size.width, m_preferredWidth);
+    updateImplicitSize(bounds.size);
+    bounds.size.width = qMax(bounds.size.width, m_preferredSize.width());
     updateSize(bounds.size);
     updateContentRect(bounds, QMargins(0, 0, 0, 0));
 }
@@ -337,8 +347,10 @@ void QQC2NSControl::updateComboBox()
     //s_nsComboBox.highlighted = m_pressed;
 
     CGRect bounds = m_control.bounds;
-    updateSize(qMax(m_preferredWidth, bounds.size.width), bounds.size.height);
-    updateContentRect(QRectF(0, 0, m_width, m_height));
+    updateImplicitSize(bounds.size);
+    bounds.size.width = qMax(bounds.size.width, m_preferredSize.width());
+    updateSize(bounds.size);
+    updateContentRect(QRectF(QPointF(), m_size));
 }
 
 #include "moc_qqc2nscontrol.cpp"

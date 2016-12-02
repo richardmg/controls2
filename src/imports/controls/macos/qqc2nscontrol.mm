@@ -67,10 +67,10 @@ QQC2NSControl::QQC2NSControl(QQuickItem *parent)
 {
 }
 
-QQC2NSControl::QQC2NSControl(const QString &stringId)
+QQC2NSControl::QQC2NSControl(const QString &imageProviderId)
     : QQC2NSControl(0)
 {
-    fromStringID(stringId);
+    fromImageProviderId(imageProviderId);
     m_componentComplete = true;
     update();
 }
@@ -91,17 +91,17 @@ void QQC2NSControl::componentComplete()
     });
 }
 
-QString QQC2NSControl::toStringID()
+QString QQC2NSControl::toImageProviderId()
 {
     return QString::number(int(m_type))
             + separator + QString::number(int(m_pressed))
             + separator + QString::number(m_bezelStyle);
 }
 
-void QQC2NSControl::fromStringID(const QString &stringId)
+void QQC2NSControl::fromImageProviderId(const QString &imageProviderId)
 {
     int i = 0;
-    QStringList args = stringId.split(separator);
+    QStringList args = imageProviderId.split(separator);
 
     m_type = Type(args[i++].toInt());
     m_pressed = bool(args[i++].toInt());
@@ -286,7 +286,7 @@ void QQC2NSControl::updateFont()
 
 void QQC2NSControl::updateUrl()
 {
-    QUrl url(QStringLiteral("image://nscontrol/") + toStringID());
+    QUrl url(QStringLiteral("image://nscontrol/") + toImageProviderId());
 
     if (url == m_url)
         return;

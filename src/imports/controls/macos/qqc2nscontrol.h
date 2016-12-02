@@ -89,7 +89,7 @@ public:
     Q_ENUM(BezelStyle)
 
     explicit QQC2NSControl(QQuickItem *parent = nullptr);
-    explicit QQC2NSControl(const QString &stringId);
+    explicit QQC2NSControl(const QString &imageProviderId);
     ~QQC2NSControl();
 
     Type type() const;
@@ -139,8 +139,8 @@ private:
     NSControl *m_control;
     bool m_componentComplete;
 
-    QString toStringID();
-    void fromStringID(const QString &stringId);
+    QString toImageProviderId();
+    void fromImageProviderId(const QString &imageProviderId);
 
     void updateContentRect(const CGRect &cgRect, const QMargins &margins = QMargins());
     void updateContentRect(const QRectF &rect, const QMargins &margins = QMargins());
